@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,7 @@ namespace Minibank.Core
         {
             if (amountInRubles < 0)
                 throw new UserFriendlyException("Отрицательное значение", amountInRubles);
+                
             var value = amountInRubles * exchangeRates.GetExchange(currencyCode);
             return value;
         }
