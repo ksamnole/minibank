@@ -17,8 +17,10 @@ namespace Minibank.Core
 
         public float Convert(float amountInRubles, string currencyCode)
         {
+            if (amountInRubles < 0)
+                throw new UserFriendlyException("Отрицательное значение", amountInRubles);
             var value = amountInRubles * exchangeRates.GetExchange(currencyCode);
-            return value >= 0 ? value : throw new UserFriendlyException("Отрицательное значение", value);
+            return value;
         }
     }
 }
