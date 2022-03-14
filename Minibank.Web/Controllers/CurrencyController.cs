@@ -18,10 +18,10 @@ namespace Minibank.Web.Controllers
             this.converter = converter;
         }
 
-        [HttpGet("{amountInRubles}/{currencyCode}")]
-        public float Get(int amountInRubles, string currencyCode)
+        [HttpGet]
+        public float Convert(int amount, string fromCurrency, string toCurrency)
         {
-            return converter.Convert(amountInRubles, currencyCode);
+            return converter.Convert(amount, fromCurrency, toCurrency);
         }
     }
 }

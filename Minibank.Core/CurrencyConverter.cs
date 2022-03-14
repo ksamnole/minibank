@@ -15,12 +15,21 @@ namespace Minibank.Core
             this.exchangeRates = exchangeRates;
         }
 
-        public float Convert(float amountInRubles, string currencyCode)
+        public float Convert(float amount, string fromCurrency, string toCurrency)
         {
-            if (amountInRubles < 0)
-                throw new UserFriendlyException("Отрицательное значение", amountInRubles);
-                
-            var value = amountInRubles * exchangeRates.GetExchange(currencyCode);
+            if (amount < 0)
+                throw new ValidationException("Отрицательное значение", amount);
+            if (fromCurrency == null || toCurrency == null)
+                throw new NullReferenceException();
+
+            var value = amount;
+
+            if (fromCurrency != "RUB")
+                value *= exchangeRates.GetExchange(fromCurrency);
+
+            if (toCurrency != "RUB")
+                value /= exchangeRates.GetExchange(toCurrency);
+
             return value;
         }
     }

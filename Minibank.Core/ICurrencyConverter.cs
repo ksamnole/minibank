@@ -8,6 +8,6 @@ namespace Minibank.Core
 {
     public interface ICurrencyConverter
     {
-       float Convert(float amountInRubles, string currencyCode);
+       float Convert(float amount, string fromCurrency, string toCurrency);
     }
 }
