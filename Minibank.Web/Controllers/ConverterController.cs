@@ -9,16 +9,16 @@ namespace Minibank.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CurrencyController : ControllerBase
+    public class ConverterController : ControllerBase
     {
         private readonly ICurrencyConverter converter;
 
-        public CurrencyController(ICurrencyConverter converter)
+        public ConverterController(ICurrencyConverter converter)
         {
             this.converter = converter;
         }
 
-        [HttpGet]
+        [HttpGet("convert")]
         public float Convert(int amount, string fromCurrency, string toCurrency)
         {
             return converter.Convert(amount, fromCurrency, toCurrency);
