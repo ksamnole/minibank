@@ -11,6 +11,7 @@ namespace Minibank.Core.Domains.BankAccounts.Repositories
         BankAccount Get(string id);
         IEnumerable<BankAccount> GetAll();
         void Create(BankAccount bankAccount);
+        void Update(BankAccount bankAccount);
         void Delete(string id);
         void CloseAccount(string id);
     }

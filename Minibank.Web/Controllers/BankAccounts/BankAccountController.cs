@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minibank.Core.Domains.BankAccounts;
 using Minibank.Core.Domains.BankAccounts.Services;
+using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using Minibank.Web.Controllers.BankAccounts.Dto;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace Minibank.Web.Controllers.BankAccounts
     public class BankAccountController : ControllerBase
     {
         private readonly IBankAccountService bankAccountService;
+        private readonly IHistoryTransferRepository historyTransferRepository;
 
-        public BankAccountController(IBankAccountService bankAccountService)
+        public BankAccountController(IBankAccountService bankAccountService, IHistoryTransferRepository historyTransferRepository)
         {
             this.bankAccountService = bankAccountService;
+            this.historyTransferRepository = historyTransferRepository;
         }
 
         [HttpGet("{id}")]
@@ -57,6 +60,32 @@ namespace Minibank.Web.Controllers.BankAccounts
             return bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId);
         }
 
+        [HttpPost("transfer")]
+        public void TransferMoney(float amount, string fromAccountId, string toAccountId)
+        {
+            bankAccountService.TransferMoney(amount, fromAccountId, toAccountId);
+        }
+
+        [HttpPut("deposit/{id}")]
+        public void Deposit(string id, float amout)
+        {
+            var entity = bankAccountService.Get(id);
+
+            if (entity != null)
+            {
+                bankAccountService.Update(new BankAccount()
+                {
+                    Id = id,
+                    IsActive = entity.IsActive,
+                    UserId = entity.UserId,
+                    Amount = entity.Amount + amout,
+                    Currency = entity.Currency,
+                    OpenDate = entity.OpenDate,
+                    CloseDate = entity.CloseDate
+                });
+            }
+        }
+
         [HttpPost("create")]
         public void Create(string userId, string currency)
         {
@@ -64,6 +93,21 @@ namespace Minibank.Web.Controllers.BankAccounts
             {
                 UserId = userId,
                 Currency = currency
+            });
+        }
+
+        [HttpPut("update/{id}")]
+        public void Update(string id, BankAccountDto model)
+        {
+            bankAccountService.Update(new BankAccount()
+            {
+                Id = id,
+                IsActive = model.IsActive,
+                UserId = model.UserId,
+                Amount = model.Amount,
+                Currency = model.Currency,
+                OpenDate = model.OpenDate,
+                CloseDate = model.CloseDate
             });
         }
 

@@ -61,6 +61,21 @@ namespace Minibank.Data.BankAccounts.Repositories
             bankAccountStorage.Add(entity);
         }
 
+        public void Update(BankAccount bankAccount)
+        {
+            var entity = bankAccountStorage.FirstOrDefault(it => it.Id == bankAccount.Id);
+
+            if (entity != null)
+            {
+                entity.IsActive = bankAccount.IsActive;
+                entity.UserId = bankAccount.UserId;
+                entity.Amount = bankAccount.Amount;
+                entity.Currency = bankAccount.Currency;
+                entity.OpenDate = bankAccount.OpenDate;
+                entity.CloseDate = bankAccount.CloseDate;
+            }
+        }
+
         public void Delete(string id)
         {
             var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
