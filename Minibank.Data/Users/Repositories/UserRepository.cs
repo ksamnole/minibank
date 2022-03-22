@@ -2,6 +2,7 @@
 using Minibank.Core.Domains.Users.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 
 namespace Minibank.Data.Users.Repositories
@@ -10,12 +11,12 @@ namespace Minibank.Data.Users.Repositories
     {
         private static List<UserDbModel> userStorage = new List<UserDbModel>();
 
-        public User Get(string id)
+        public User GetById(string id)
         {
-            var entity =  userStorage.FirstOrDefault(it => it.Id == id);
+            var entity = userStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                return null;
+                throw new ObjectNotFoundException();
 
             return new User
             {
@@ -51,20 +52,21 @@ namespace Minibank.Data.Users.Repositories
         {
             var entity = userStorage.FirstOrDefault(it => it.Id == id);
 
-            if (entity != null)
-                userStorage.Remove(entity);
+            if (entity == null)
+                throw new ObjectNotFoundException();
+
+            userStorage.Remove(entity);
         }
 
         public void Update(User user)
         {
             var entity = userStorage.FirstOrDefault(it => it.Id == user.Id);
 
-            if (entity != null)
-            {
-                entity.Login = user.Login;
-                entity.Email = user.Email;
-            }
-                
+            if (entity == null)
+                throw new ObjectNotFoundException();
+
+            entity.Login = user.Login;
+            entity.Email = user.Email;    
         }
     }
 }

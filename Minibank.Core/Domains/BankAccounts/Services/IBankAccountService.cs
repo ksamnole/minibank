@@ -8,7 +8,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 {
     public interface IBankAccountService
     {
-        BankAccount Get(string id);
+        BankAccount GetById(string id);
         IEnumerable<BankAccount> GetAll();
         float CalculateCommission(float amount, string fromAccountId, string toAccountId);
         void TransferMoney(float amount, string fromAccountId, string toAccountId);

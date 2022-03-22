@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Minibank.Core.Domains.BankAccounts.Repositories
 {
     public interface IBankAccountRepository
     {
-        BankAccount Get(string id);
+        BankAccount GetById(string id);
         IEnumerable<BankAccount> GetAll();
         void Create(BankAccount bankAccount);
         void Update(BankAccount bankAccount);
         void Delete(string id);
-        void CloseAccount(string id);
     }
 }

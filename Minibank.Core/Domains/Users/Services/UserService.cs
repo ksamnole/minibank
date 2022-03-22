@@ -12,9 +12,9 @@ namespace Minibank.Core.Domains.Users.Services
             this.userRepository = userRepository;
         }
 
-        public User Get(string id)
+        public User GetById(string id)
         {
-            return userRepository.Get(id);
+            return userRepository.GetById(id);
         }
 
         public IEnumerable<User> GetAll()

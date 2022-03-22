@@ -2,9 +2,8 @@
 using Minibank.Core.Domains.BankAccounts.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minibank.Data.BankAccounts.Repositories
 {
@@ -12,12 +11,12 @@ namespace Minibank.Data.BankAccounts.Repositories
     {
         private static List<BankAccountDbModel> bankAccountStorage = new List<BankAccountDbModel>();
 
-        public BankAccount Get(string id)
+        public BankAccount GetById(string id)
         {
             var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                return null;
+                throw new ObjectNotFoundException();
 
             return new BankAccount
             {
@@ -65,34 +64,25 @@ namespace Minibank.Data.BankAccounts.Repositories
         {
             var entity = bankAccountStorage.FirstOrDefault(it => it.Id == bankAccount.Id);
 
-            if (entity != null)
-            {
-                entity.IsActive = bankAccount.IsActive;
-                entity.UserId = bankAccount.UserId;
-                entity.Amount = bankAccount.Amount;
-                entity.Currency = bankAccount.Currency;
-                entity.OpenDate = bankAccount.OpenDate;
-                entity.CloseDate = bankAccount.CloseDate;
-            }
+            if (entity == null)
+                throw new ObjectNotFoundException();
+
+            entity.IsActive = bankAccount.IsActive;
+            entity.UserId = bankAccount.UserId;
+            entity.Amount = bankAccount.Amount;
+            entity.Currency = bankAccount.Currency;
+            entity.OpenDate = bankAccount.OpenDate;
+            entity.CloseDate = bankAccount.CloseDate;
         }
 
         public void Delete(string id)
         {
             var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
 
-            if (entity != null)
-                bankAccountStorage.Remove(entity);
-        }
+            if (entity == null)
+                throw new ObjectNotFoundException();
 
-        public void CloseAccount(string id)
-        {
-            var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
-
-            if (entity != null)
-            {
-                entity.IsActive = false;
-                entity.CloseDate = DateTime.Now;
-            }
+            bankAccountStorage.Remove(entity);
         }
     }
 }

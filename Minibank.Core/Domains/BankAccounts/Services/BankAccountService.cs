@@ -7,13 +7,19 @@ using System.Collections.Generic;
 
 namespace Minibank.Core.Domains.BankAccounts.Services
 {
+    enum AllowedCurrency
+    {
+        RUB,
+        USD,
+        EUR
+    }
+
     public class BankAccountService : IBankAccountService
     {
         private readonly IBankAccountRepository bankAccountRepository;
         private readonly IHistoryTransferRepository historyTransferRepository;
         private readonly IUserRepository userRepository;
         private readonly ICurrencyConverter currencyConverter;
-        private readonly List<string> allowedCurrency;
 
         public BankAccountService(IBankAccountRepository bankAccountRepository, IUserRepository userRepository = null, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null)
         {
@@ -21,13 +27,11 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             this.historyTransferRepository = historyTransferRepository;
             this.userRepository = userRepository;
             this.currencyConverter = currencyConverter;
-            allowedCurrency = new List<string>() { "RUB", "USD", "EUR" };
-            
         }
 
-        public BankAccount Get(string id)
+        public BankAccount GetById(string id)
         {
-            return bankAccountRepository.Get(id);
+            return bankAccountRepository.GetById(id);
         }
 
         public IEnumerable<BankAccount> GetAll()
@@ -40,13 +44,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (amount < 0)
                 throw new ValidationException("Сумма не может быть меньше 0", amount);
 
-            var fromAccount = bankAccountRepository.Get(fromAccountId);
-            if (fromAccount == null)
-                throw new ValidationException("Банковский аккаунт с таким Id не существует", fromAccountId);
-
-            var toAccount = bankAccountRepository.Get(toAccountId);
-            if (toAccount == null)
-                throw new ValidationException("Банковский аккаунт с таким Id не существует", toAccountId);
+            var fromAccount = bankAccountRepository.GetById(fromAccountId);
+            var toAccount = bankAccountRepository.GetById(toAccountId);
 
             return CalculateCommission(amount, fromAccount, toAccount);
         }
@@ -56,13 +55,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (amount <= 0)
                 throw new ValidationException("Сумма перевода должна быть больше нуля", amount);
 
-            var fromAccount = bankAccountRepository.Get(fromAccountId);
-            if (fromAccount == null)
-                throw new ValidationException("Банковский аккаунт с таким Id не существует", fromAccountId);
-
-            var toAccount = bankAccountRepository.Get(toAccountId);
-            if (toAccount == null)
-                throw new ValidationException("Банковский аккаунт с таким Id не существует", toAccountId);
+            var fromAccount = bankAccountRepository.GetById(fromAccountId);
+            var toAccount = bankAccountRepository.GetById(toAccountId);
 
             var commission = CalculateCommission(amount, fromAccount, toAccount);
 
@@ -94,10 +88,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public void Create(BankAccount bankAccount)
         {
-            // Validation
-            if (userRepository.Get(bankAccount.UserId) == null)
-                throw new ValidationException("Пользователя с такие Id не существует", bankAccount.UserId);
-            if (!allowedCurrency.Contains(bankAccount.Currency))
+            if (!Enum.IsDefined(typeof(AllowedCurrency), bankAccount.Currency))
                 throw new ValidationException("Запрещенная валюта", bankAccount.Currency);
             
             bankAccountRepository.Create(bankAccount);
@@ -115,12 +106,15 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public void CloseAccount(string id)
         {
-            var entity = bankAccountRepository.Get(id);
+            var model = bankAccountRepository.GetById(id);
 
-            if (entity.Amount != 0)
+            if (model.Amount != 0)
                 throw new ValidationException("Сумма на счету аккаунта должна быть 0");
 
-            bankAccountRepository.CloseAccount(id);
+            model.IsActive = false;
+            model.CloseDate = DateTime.Now;
+
+            bankAccountRepository.Update(model);
         }
 
         private float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)

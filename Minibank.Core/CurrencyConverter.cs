@@ -18,9 +18,11 @@ namespace Minibank.Core
         public float Convert(float amount, string fromCurrency, string toCurrency)
         {
             if (amount < 0)
-                throw new ValidationException("Отрицательное значение", amount);
-            if (fromCurrency == null || toCurrency == null)
-                throw new NullReferenceException();
+                throw new ValidationException("Сумма должна быть больше 0", amount);
+            if (fromCurrency == null)
+                throw new ValidationException("Код валюты равен null", fromCurrency);
+            if (toCurrency == null)
+                throw new ValidationException("Код валюты равен null", toCurrency);
 
             var value = amount;
 

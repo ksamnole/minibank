@@ -26,7 +26,7 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpGet("{id}")]
         public BankAccountDto Get(string id)
         {
-            var model = bankAccountService.Get(id);
+            var model = bankAccountService.GetById(id);
 
             return new BankAccountDto()
             {
@@ -69,21 +69,18 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpPut("deposit/{id}")]
         public void Deposit(string id, float amout)
         {
-            var entity = bankAccountService.Get(id);
+            var entity = bankAccountService.GetById(id);
 
-            if (entity != null)
+            bankAccountService.Update(new BankAccount()
             {
-                bankAccountService.Update(new BankAccount()
-                {
-                    Id = id,
-                    IsActive = entity.IsActive,
-                    UserId = entity.UserId,
-                    Amount = entity.Amount + amout,
-                    Currency = entity.Currency,
-                    OpenDate = entity.OpenDate,
-                    CloseDate = entity.CloseDate
-                });
-            }
+                Id = id,
+                IsActive = entity.IsActive,
+                UserId = entity.UserId,
+                Amount = entity.Amount + amout,
+                Currency = entity.Currency,
+                OpenDate = entity.OpenDate,
+                CloseDate = entity.CloseDate
+            });
         }
 
         [HttpPost("create")]
@@ -96,7 +93,7 @@ namespace Minibank.Web.Controllers.BankAccounts
             });
         }
 
-        [HttpPut("update/{id}")]
+        [HttpPut("{id}")]
         public void Update(string id, BankAccountDto model)
         {
             bankAccountService.Update(new BankAccount()

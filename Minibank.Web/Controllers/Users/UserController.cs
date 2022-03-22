@@ -23,7 +23,7 @@ namespace Minibank.Web.Controllers.Users
         [HttpGet("{id}")]
         public UserDto Get(string id)
         {
-            var model = userService.Get(id);
+            var model = userService.GetById(id);
 
             return new UserDto
             {
@@ -57,7 +57,7 @@ namespace Minibank.Web.Controllers.Users
             });
         }
 
-        [HttpPut("update/{id}")]
+        [HttpPut("{id}")]
         public void Update(string id, UserDto model)
         {
             userService.Update(new User

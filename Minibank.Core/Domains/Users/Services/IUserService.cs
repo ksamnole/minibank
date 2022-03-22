@@ -4,7 +4,7 @@ namespace Minibank.Core.Domains.Users.Services
 {
     public interface IUserService
     {
-        User Get(string id);
+        User GetById(string id);
         IEnumerable<User> GetAll();
         void Create(User user);
         void Update(User user);
