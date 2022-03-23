@@ -12,17 +12,17 @@ namespace Minibank.Web.Controllers.HistoryTransfers
     [Route("[controller]")]
     public class HistoryTransferController : Controller
     {
-        private readonly IHistoryTransferService historyTransferService;
+        private readonly IHistoryTransferService _historyTransferService;
 
         public HistoryTransferController(IHistoryTransferService historyTransferService)
         {
-            this.historyTransferService = historyTransferService;
+            this._historyTransferService = historyTransferService;
         }
 
         [HttpGet()]
         public IEnumerable<HistoryTransferDto> GetAll()
         {
-            return historyTransferService.GetAll()
+            return _historyTransferService.GetAll()
                 .Select(it => new HistoryTransferDto
                 {
                     Id = it.Id,

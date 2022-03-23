@@ -9,14 +9,14 @@ namespace Minibank.Data.BankAccounts.Repositories
 {
     public class BankAccountRepository : IBankAccountRepository
     {
-        private static List<BankAccountDbModel> bankAccountStorage = new List<BankAccountDbModel>();
+        private static List<BankAccountDbModel> _bankAccountStorage = new List<BankAccountDbModel>();
 
         public BankAccount GetById(string id)
         {
-            var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
+            var entity = _bankAccountStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Банковский аккаунт с Id = {id} не найден");
 
             return new BankAccount
             {
@@ -32,7 +32,7 @@ namespace Minibank.Data.BankAccounts.Repositories
 
         public IEnumerable<BankAccount> GetAll()
         {
-            return bankAccountStorage.Select(it =>
+            return _bankAccountStorage.Select(it =>
             new BankAccount
             {
                 Id = it.Id,
@@ -57,15 +57,15 @@ namespace Minibank.Data.BankAccounts.Repositories
                 OpenDate = DateTime.Now
             };
 
-            bankAccountStorage.Add(entity);
+            _bankAccountStorage.Add(entity);
         }
 
         public void Update(BankAccount bankAccount)
         {
-            var entity = bankAccountStorage.FirstOrDefault(it => it.Id == bankAccount.Id);
+            var entity = _bankAccountStorage.FirstOrDefault(it => it.Id == bankAccount.Id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Банковский аккаунт с Id = {bankAccount.Id} не найден");
 
             entity.IsActive = bankAccount.IsActive;
             entity.UserId = bankAccount.UserId;
@@ -77,12 +77,12 @@ namespace Minibank.Data.BankAccounts.Repositories
 
         public void Delete(string id)
         {
-            var entity = bankAccountStorage.FirstOrDefault(it => it.Id == id);
+            var entity = _bankAccountStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Банковский аккаунт с Id = {id} не найден");
 
-            bankAccountStorage.Remove(entity);
+            _bankAccountStorage.Remove(entity);
         }
     }
 }

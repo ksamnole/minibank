@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minibank.Core;
+using Minibank.Core.Domains.BankAccounts.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +12,17 @@ namespace Minibank.Web.Controllers
     [Route("[controller]")]
     public class ConverterController : ControllerBase
     {
-        private readonly ICurrencyConverter converter;
+        private readonly ICurrencyConverter _converter;
 
         public ConverterController(ICurrencyConverter converter)
         {
-            this.converter = converter;
+            this._converter = converter;
         }
 
         [HttpGet("convert")]
-        public float Convert(int amount, string fromCurrency, string toCurrency)
+        public float Convert(int amount, AllowedCurrency fromCurrency, AllowedCurrency toCurrency)
         {
-            return converter.Convert(amount, fromCurrency, toCurrency);
+            return _converter.Convert(amount, fromCurrency, toCurrency);
         }
     }
 }

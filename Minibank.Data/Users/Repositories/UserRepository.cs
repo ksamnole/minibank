@@ -9,14 +9,14 @@ namespace Minibank.Data.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private static List<UserDbModel> userStorage = new List<UserDbModel>();
+        private static List<UserDbModel> _userStorage = new List<UserDbModel>();
 
         public User GetById(string id)
         {
-            var entity = userStorage.FirstOrDefault(it => it.Id == id);
+            var entity = _userStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
 
             return new User
             {
@@ -28,7 +28,7 @@ namespace Minibank.Data.Users.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            return userStorage.Select(it => 
+            return _userStorage.Select(it => 
             new User { 
                 Id = it.Id,
                 Login = it.Login,
@@ -45,25 +45,25 @@ namespace Minibank.Data.Users.Repositories
                 Email = user.Email
             };
 
-            userStorage.Add(entity);
+            _userStorage.Add(entity);
         }
 
         public void Delete(string id)
         {
-            var entity = userStorage.FirstOrDefault(it => it.Id == id);
+            var entity = _userStorage.FirstOrDefault(it => it.Id == id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
 
-            userStorage.Remove(entity);
+            _userStorage.Remove(entity);
         }
 
         public void Update(User user)
         {
-            var entity = userStorage.FirstOrDefault(it => it.Id == user.Id);
+            var entity = _userStorage.FirstOrDefault(it => it.Id == user.Id);
 
             if (entity == null)
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException($"Пользователь с Id = {user.Id} не найден");
 
             entity.Login = user.Login;
             entity.Email = user.Email;    

@@ -14,19 +14,17 @@ namespace Minibank.Web.Controllers.BankAccounts
     [Route("[controller]")]
     public class BankAccountController : ControllerBase
     {
-        private readonly IBankAccountService bankAccountService;
-        private readonly IHistoryTransferRepository historyTransferRepository;
+        private readonly IBankAccountService _bankAccountService;
 
-        public BankAccountController(IBankAccountService bankAccountService, IHistoryTransferRepository historyTransferRepository)
+        public BankAccountController(IBankAccountService bankAccountService)
         {
-            this.bankAccountService = bankAccountService;
-            this.historyTransferRepository = historyTransferRepository;
+            this._bankAccountService = bankAccountService;
         }
 
         [HttpGet("{id}")]
         public BankAccountDto Get(string id)
         {
-            var model = bankAccountService.GetById(id);
+            var model = _bankAccountService.GetById(id);
 
             return new BankAccountDto()
             {
@@ -43,7 +41,7 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpGet]
         public IEnumerable<BankAccountDto> GetAll()
         {
-            return bankAccountService.GetAll().Select(it => new BankAccountDto() {
+            return _bankAccountService.GetAll().Select(it => new BankAccountDto() {
                 Id = it.Id,
                 IsActive = it.IsActive,
                 UserId = it.UserId,
@@ -57,21 +55,21 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpGet("commission")]
         public float CalculateCommission(float amount, string fromAccountId, string toAccountId)
         {
-            return bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId);
+            return _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId);
         }
 
         [HttpPost("transfer")]
         public void TransferMoney(float amount, string fromAccountId, string toAccountId)
         {
-            bankAccountService.TransferMoney(amount, fromAccountId, toAccountId);
+            _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId);
         }
 
         [HttpPut("deposit/{id}")]
         public void Deposit(string id, float amout)
         {
-            var entity = bankAccountService.GetById(id);
+            var entity = _bankAccountService.GetById(id);
 
-            bankAccountService.Update(new BankAccount()
+            _bankAccountService.Update(new BankAccount()
             {
                 Id = id,
                 IsActive = entity.IsActive,
@@ -84,9 +82,9 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpPost("create")]
-        public void Create(string userId, string currency)
+        public void Create(string userId, AllowedCurrency currency)
         {
-            bankAccountService.Create(new BankAccount
+            _bankAccountService.Create(new BankAccount
             {
                 UserId = userId,
                 Currency = currency
@@ -96,7 +94,7 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpPut("{id}")]
         public void Update(string id, BankAccountDto model)
         {
-            bankAccountService.Update(new BankAccount()
+            _bankAccountService.Update(new BankAccount()
             {
                 Id = id,
                 IsActive = model.IsActive,
@@ -111,13 +109,13 @@ namespace Minibank.Web.Controllers.BankAccounts
         [HttpDelete("delete/{id}")]
         public void Delete(string id)
         {
-            bankAccountService.Delete(id);
+            _bankAccountService.Delete(id);
         }
 
         [HttpGet("close/{id}")]
         public void CloseAccount(string id)
         {
-            bankAccountService.CloseAccount(id);
+            _bankAccountService.CloseAccount(id);
         }
     }
 }

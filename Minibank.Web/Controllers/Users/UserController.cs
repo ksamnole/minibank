@@ -13,17 +13,17 @@ namespace Minibank.Web.Controllers.Users
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
 
         public UserController(IUserService userService)
         {
-            this.userService = userService;
+            this._userService = userService;
         }
 
         [HttpGet("{id}")]
         public UserDto Get(string id)
         {
-            var model = userService.GetById(id);
+            var model = _userService.GetById(id);
 
             return new UserDto
             {
@@ -36,7 +36,7 @@ namespace Minibank.Web.Controllers.Users
         [HttpGet()]
         public IEnumerable<UserDto> GetAll()
         {
-            return userService.GetAll()
+            return _userService.GetAll()
                 .Select(it => new UserDto
                 {
                     Id = it.Id,
@@ -49,7 +49,7 @@ namespace Minibank.Web.Controllers.Users
         [HttpPost("create")]
         public void Create(UserDto model)
         {
-            userService.Create(new User
+            _userService.Create(new User
             {
                 Id = model.Id,
                 Login = model.Login,
@@ -60,7 +60,7 @@ namespace Minibank.Web.Controllers.Users
         [HttpPut("{id}")]
         public void Update(string id, UserDto model)
         {
-            userService.Update(new User
+            _userService.Update(new User
             {
                 Id = id,
                 Login = model.Login,
@@ -71,7 +71,7 @@ namespace Minibank.Web.Controllers.Users
         [HttpDelete("delete/{id}")]
         public void Delete(string id)
         {
-            userService.Delete(id);
+            _userService.Delete(id);
         }
     }
 }

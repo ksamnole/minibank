@@ -1,13 +1,8 @@
 ﻿using Minibank.Core;
+using Minibank.Core.Domains.BankAccounts.Services;
 using Minibank.Data.HttpClients.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Minibank.Data
 {
@@ -27,7 +22,7 @@ namespace Minibank.Data
 
             return response.Valute.TryGetValue(code, out var valute)
                 ? valute.Value
-                : throw new ValidationException($"Не правильный код валюты", code);
+                : throw new ValidationException($"Неправильный код валюты", code);
         }
     }
 }

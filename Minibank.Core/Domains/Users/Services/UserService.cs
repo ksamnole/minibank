@@ -5,36 +5,36 @@ namespace Minibank.Core.Domains.Users.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository)
         {
-            this.userRepository = userRepository;
+            this._userRepository = userRepository;
         }
 
         public User GetById(string id)
         {
-            return userRepository.GetById(id);
+            return _userRepository.GetById(id);
         }
 
         public IEnumerable<User> GetAll()
         {
-            return userRepository.GetAll();
+            return _userRepository.GetAll();
         }
 
         public void Create(User user)
         {
-            userRepository.Create(user);
+            _userRepository.Create(user);
         }
 
         public void Delete(string id)
         {
-            userRepository.Delete(id);
+            _userRepository.Delete(id);
         }
 
         public void Update(User user)
         {
-            userRepository.Update(user);
+            _userRepository.Update(user);
         }
     }
 }

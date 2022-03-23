@@ -1,29 +1,25 @@
 ﻿using Minibank.Core.Domains.HistoryTransfers.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.HistoryTransfers.Services
 {
     public class HistoryTransferService : IHistoryTransferService
     {
-        private readonly IHistoryTransferRepository historyTransferRepository;
+        private readonly IHistoryTransferRepository _historyTransferRepository;
 
         public HistoryTransferService(IHistoryTransferRepository historyTransferRepository)
         {
-            this.historyTransferRepository = historyTransferRepository;
+            this._historyTransferRepository = historyTransferRepository;
         }
 
         public void Create(HistoryTransfer historyTransfer)
         {
-            historyTransferRepository.Create(historyTransfer);
+            _historyTransferRepository.Create(historyTransfer);
         }
 
         public IEnumerable<HistoryTransfer> GetAll()
         {
-            return historyTransferRepository.GetAll();
+            return _historyTransferRepository.GetAll();
         }
     }
 }

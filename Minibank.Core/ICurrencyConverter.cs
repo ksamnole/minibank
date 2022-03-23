@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Minibank.Core.Domains.BankAccounts.Services;
 
 namespace Minibank.Core
 {
     public interface ICurrencyConverter
     {
-       float Convert(float amount, string fromCurrency, string toCurrency);
+       float Convert(float amount, AllowedCurrency fromCurrency, AllowedCurrency toCurrency);
     }
 }

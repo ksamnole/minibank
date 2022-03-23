@@ -1,13 +1,14 @@
 ﻿using Minibank.Core.Domains.BankAccounts.Repositories;
 using Minibank.Core.Domains.HistoryTransfers;
 using Minibank.Core.Domains.HistoryTransfers.Repositories;
-using Minibank.Core.Domains.Users.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Minibank.Core.Domains.BankAccounts.Services
 {
-    enum AllowedCurrency
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum AllowedCurrency
     {
         RUB,
         USD,
@@ -16,27 +17,25 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
     public class BankAccountService : IBankAccountService
     {
-        private readonly IBankAccountRepository bankAccountRepository;
-        private readonly IHistoryTransferRepository historyTransferRepository;
-        private readonly IUserRepository userRepository;
-        private readonly ICurrencyConverter currencyConverter;
+        private readonly IBankAccountRepository _bankAccountRepository;
+        private readonly IHistoryTransferRepository _historyTransferRepository;
+        private readonly ICurrencyConverter _currencyConverter;
 
-        public BankAccountService(IBankAccountRepository bankAccountRepository, IUserRepository userRepository = null, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null)
+        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null)
         {
-            this.bankAccountRepository = bankAccountRepository;
-            this.historyTransferRepository = historyTransferRepository;
-            this.userRepository = userRepository;
-            this.currencyConverter = currencyConverter;
+            this._bankAccountRepository = bankAccountRepository;
+            this._historyTransferRepository = historyTransferRepository;
+            this._currencyConverter = currencyConverter;
         }
 
         public BankAccount GetById(string id)
         {
-            return bankAccountRepository.GetById(id);
+            return _bankAccountRepository.GetById(id);
         }
 
         public IEnumerable<BankAccount> GetAll()
         {
-            return bankAccountRepository.GetAll();
+            return _bankAccountRepository.GetAll();
         }
 
         public float CalculateCommission(float amount, string fromAccountId, string toAccountId)
@@ -44,8 +43,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (amount < 0)
                 throw new ValidationException("Сумма не может быть меньше 0", amount);
 
-            var fromAccount = bankAccountRepository.GetById(fromAccountId);
-            var toAccount = bankAccountRepository.GetById(toAccountId);
+            var fromAccount = _bankAccountRepository.GetById(fromAccountId);
+            var toAccount = _bankAccountRepository.GetById(toAccountId);
 
             return CalculateCommission(amount, fromAccount, toAccount);
         }
@@ -55,8 +54,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (amount <= 0)
                 throw new ValidationException("Сумма перевода должна быть больше нуля", amount);
 
-            var fromAccount = bankAccountRepository.GetById(fromAccountId);
-            var toAccount = bankAccountRepository.GetById(toAccountId);
+            var fromAccount = _bankAccountRepository.GetById(fromAccountId);
+            var toAccount = _bankAccountRepository.GetById(toAccountId);
 
             var commission = CalculateCommission(amount, fromAccount, toAccount);
 
@@ -66,18 +65,18 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             float amountInToAccountCurrency;
 
             if (fromAccount.Currency != toAccount.Currency)
-                amountInToAccountCurrency = currencyConverter.Convert(amount, fromAccount.Currency, toAccount.Currency);
+                amountInToAccountCurrency = _currencyConverter.Convert(amount, fromAccount.Currency, toAccount.Currency);
             else
                 amountInToAccountCurrency = amount;
 
 
             fromAccount.Amount -= (amount + commission);
-            bankAccountRepository.Update(fromAccount);
+            _bankAccountRepository.Update(fromAccount);
 
             toAccount.Amount += amountInToAccountCurrency;
-            bankAccountRepository.Update(toAccount);
+            _bankAccountRepository.Update(toAccount);
 
-            historyTransferRepository.Create(new HistoryTransfer() {
+            _historyTransferRepository.Create(new HistoryTransfer() {
                 Id = Guid.NewGuid().ToString(),
                 Amount = amount,
                 Currency = fromAccount.Currency,
@@ -91,22 +90,22 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (!Enum.IsDefined(typeof(AllowedCurrency), bankAccount.Currency))
                 throw new ValidationException("Запрещенная валюта", bankAccount.Currency);
             
-            bankAccountRepository.Create(bankAccount);
+            _bankAccountRepository.Create(bankAccount);
         }
 
         public void Update(BankAccount bankAccount)
         {
-            bankAccountRepository.Update(bankAccount);
+            _bankAccountRepository.Update(bankAccount);
         }
 
         public void Delete(string id)
         {
-            bankAccountRepository.Delete(id);
+            _bankAccountRepository.Delete(id);
         }
 
         public void CloseAccount(string id)
         {
-            var model = bankAccountRepository.GetById(id);
+            var model = _bankAccountRepository.GetById(id);
 
             if (model.Amount != 0)
                 throw new ValidationException("Сумма на счету аккаунта должна быть 0");
@@ -114,7 +113,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             model.IsActive = false;
             model.CloseDate = DateTime.Now;
 
-            bankAccountRepository.Update(model);
+            _bankAccountRepository.Update(model);
         }
 
         private float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)

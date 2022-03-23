@@ -10,7 +10,7 @@ namespace Minibank.Data.HistoryTransfers.Repositories
 {
     public class HistoryTransferRepository : IHistoryTransferRepository
     {
-        private static List<HistoryTransferDbModel> historyTransfersStorage = new List<HistoryTransferDbModel>();
+        private static List<HistoryTransferDbModel> _historyTransfersStorage = new List<HistoryTransferDbModel>();
 
         public void Create(HistoryTransfer historyTransfer)
         {
@@ -23,12 +23,12 @@ namespace Minibank.Data.HistoryTransfers.Repositories
                 ToAccountId = historyTransfer.ToAccountId
             };
 
-            historyTransfersStorage.Add(entity);
+            _historyTransfersStorage.Add(entity);
         }
 
         public IEnumerable<HistoryTransfer> GetAll()
         {
-            return historyTransfersStorage.Select(it =>
+            return _historyTransfersStorage.Select(it =>
             new HistoryTransfer
             {
                 Id = it.Id,
