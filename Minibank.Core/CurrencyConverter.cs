@@ -1,9 +1,4 @@
-using Minibank.Core.Domains.BankAccounts.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Minibank.Core.Domains.BankAccounts.Enums;
 
 namespace Minibank.Core
 {
@@ -16,17 +11,17 @@ namespace Minibank.Core
             this._exchangeRates = exchangeRates;
         }
 
-        public float Convert(float amount, AllowedCurrency fromCurrency, AllowedCurrency toCurrency)
+        public float Convert(float amount, Currency fromCurrency, Currency toCurrency)
         {
             if (amount < 0)
                 throw new ValidationException("Сумма должна быть больше 0", amount);
 
             var value = amount;
 
-            if (fromCurrency != AllowedCurrency.RUB)
+            if (fromCurrency != Currency.RUB)
                 value *= _exchangeRates.GetExchange(fromCurrency.ToString());
 
-            if (toCurrency != AllowedCurrency.RUB)
+            if (toCurrency != Currency.RUB)
                 value /= _exchangeRates.GetExchange(toCurrency.ToString());
 
             return value;

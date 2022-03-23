@@ -1,9 +1,9 @@
-﻿using Minibank.Core.Domains.BankAccounts.Services;
+﻿using Minibank.Core.Domains.BankAccounts.Enums;
 
 namespace Minibank.Core
 {
     public interface ICurrencyConverter
     {
-       float Convert(float amount, AllowedCurrency fromCurrency, AllowedCurrency toCurrency);
+       float Convert(float amount, Currency fromCurrency, Currency toCurrency);
     }
 }

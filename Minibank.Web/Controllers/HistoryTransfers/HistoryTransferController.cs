@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minibank.Core.Domains.HistoryTransfers.Services;
 using Minibank.Web.Controllers.HistoryTransfers.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.HistoryTransfers
 {
@@ -16,7 +14,7 @@ namespace Minibank.Web.Controllers.HistoryTransfers
 
         public HistoryTransferController(IHistoryTransferService historyTransferService)
         {
-            this._historyTransferService = historyTransferService;
+            _historyTransferService = historyTransferService;
         }
 
         [HttpGet()]

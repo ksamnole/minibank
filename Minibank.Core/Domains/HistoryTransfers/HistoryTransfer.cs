@@ -1,4 +1,4 @@
-﻿using Minibank.Core.Domains.BankAccounts.Services;
+﻿using Minibank.Core.Domains.BankAccounts.Enums;
 
 namespace Minibank.Core.Domains.HistoryTransfers
 {
@@ -6,7 +6,7 @@ namespace Minibank.Core.Domains.HistoryTransfers
     {
         public string Id { get; set; }
         public float Amount { get; set; }
-        public AllowedCurrency Currency { get; set; }
+        public Currency Currency { get; set; }
         public string FromAccountId { get; set; }
         public string ToAccountId { get; set; }
     }

@@ -3,18 +3,10 @@ using Minibank.Core.Domains.HistoryTransfers;
 using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Minibank.Core.Domains.BankAccounts.Enums;
 
 namespace Minibank.Core.Domains.BankAccounts.Services
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum AllowedCurrency
-    {
-        RUB,
-        USD,
-        EUR
-    }
-
     public class BankAccountService : IBankAccountService
     {
         private readonly IBankAccountRepository _bankAccountRepository;
@@ -23,9 +15,9 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null)
         {
-            this._bankAccountRepository = bankAccountRepository;
-            this._historyTransferRepository = historyTransferRepository;
-            this._currencyConverter = currencyConverter;
+            _bankAccountRepository = bankAccountRepository;
+            _historyTransferRepository = historyTransferRepository;
+            _currencyConverter = currencyConverter;
         }
 
         public BankAccount GetById(string id)
@@ -87,7 +79,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public void Create(BankAccount bankAccount)
         {
-            if (!Enum.IsDefined(typeof(AllowedCurrency), bankAccount.Currency))
+            if (!Enum.IsDefined(typeof(Currency), bankAccount.Currency))
                 throw new ValidationException("Запрещенная валюта", bankAccount.Currency);
             
             _bankAccountRepository.Create(bankAccount);

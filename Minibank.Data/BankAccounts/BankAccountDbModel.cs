@@ -1,9 +1,5 @@
-﻿using Minibank.Core.Domains.BankAccounts.Services;
+﻿using Minibank.Core.Domains.BankAccounts.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minibank.Data.BankAccounts.Repositories
 {
@@ -13,7 +9,7 @@ namespace Minibank.Data.BankAccounts.Repositories
         public bool IsActive { get; set; }
         public string UserId { get; set; }
         public float Amount { get; set; }
-        public AllowedCurrency Currency { get; set; }
+        public Currency Currency { get; set; }
         public DateTime OpenDate { get; set; }
         public DateTime? CloseDate { get; set; }
     }

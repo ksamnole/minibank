@@ -1,5 +1,4 @@
-﻿using Minibank.Core.Domains.BankAccounts.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 

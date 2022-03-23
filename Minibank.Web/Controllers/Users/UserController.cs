@@ -17,7 +17,7 @@ namespace Minibank.Web.Controllers.Users
 
         public UserController(IUserService userService)
         {
-            this._userService = userService;
+            _userService = userService;
         }
 
         [HttpGet("{id}")]
@@ -46,7 +46,7 @@ namespace Minibank.Web.Controllers.Users
         }
 
 
-        [HttpPost("create")]
+        [HttpPost()]
         public void Create(UserDto model)
         {
             _userService.Create(new User
@@ -68,7 +68,7 @@ namespace Minibank.Web.Controllers.Users
             });
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public void Delete(string id)
         {
             _userService.Delete(id);

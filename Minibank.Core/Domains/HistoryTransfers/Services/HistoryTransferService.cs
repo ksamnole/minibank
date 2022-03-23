@@ -9,7 +9,7 @@ namespace Minibank.Core.Domains.HistoryTransfers.Services
 
         public HistoryTransferService(IHistoryTransferRepository historyTransferRepository)
         {
-            this._historyTransferRepository = historyTransferRepository;
+            _historyTransferRepository = historyTransferRepository;
         }
 
         public void Create(HistoryTransfer historyTransfer)

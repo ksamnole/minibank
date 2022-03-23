@@ -1,5 +1,4 @@
 ﻿using Minibank.Core;
-using Minibank.Core.Domains.BankAccounts.Services;
 using Minibank.Data.HttpClients.Models;
 using System.Net.Http;
 using System.Net.Http.Json;

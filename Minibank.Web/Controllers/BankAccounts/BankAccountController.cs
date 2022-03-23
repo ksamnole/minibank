@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minibank.Core.Domains.BankAccounts;
+using Minibank.Core.Domains.BankAccounts.Enums;
 using Minibank.Core.Domains.BankAccounts.Services;
-using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using Minibank.Web.Controllers.BankAccounts.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.BankAccounts
 {
@@ -18,7 +16,7 @@ namespace Minibank.Web.Controllers.BankAccounts
 
         public BankAccountController(IBankAccountService bankAccountService)
         {
-            this._bankAccountService = bankAccountService;
+            _bankAccountService = bankAccountService;
         }
 
         [HttpGet("{id}")]
@@ -81,8 +79,8 @@ namespace Minibank.Web.Controllers.BankAccounts
             });
         }
 
-        [HttpPost("create")]
-        public void Create(string userId, AllowedCurrency currency)
+        [HttpPost()]
+        public void Create(string userId, Currency currency)
         {
             _bankAccountService.Create(new BankAccount
             {
@@ -106,7 +104,7 @@ namespace Minibank.Web.Controllers.BankAccounts
             });
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public void Delete(string id)
         {
             _bankAccountService.Delete(id);

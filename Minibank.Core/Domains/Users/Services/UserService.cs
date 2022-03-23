@@ -9,7 +9,7 @@ namespace Minibank.Core.Domains.Users.Services
 
         public UserService(IUserRepository userRepository)
         {
-            this._userRepository = userRepository;
+            _userRepository = userRepository;
         }
 
         public User GetById(string id)

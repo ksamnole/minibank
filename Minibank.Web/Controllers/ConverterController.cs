@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minibank.Core;
+using Minibank.Core.Domains.BankAccounts.Enums;
 using Minibank.Core.Domains.BankAccounts.Services;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Minibank.Web.Controllers
         }
 
         [HttpGet("convert")]
-        public float Convert(int amount, AllowedCurrency fromCurrency, AllowedCurrency toCurrency)
+        public float Convert(int amount, Currency fromCurrency, Currency toCurrency)
         {
             return _converter.Convert(amount, fromCurrency, toCurrency);
         }
