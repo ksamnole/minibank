@@ -33,7 +33,7 @@ namespace Minibank.Web.Controllers.Users
             };
         }
 
-        [HttpGet()]
+        [HttpGet]
         public IEnumerable<UserDto> GetAll()
         {
             return _userService.GetAll()
@@ -45,8 +45,7 @@ namespace Minibank.Web.Controllers.Users
                 });
         }
 
-
-        [HttpPost()]
+        [HttpPost]
         public void Create(UserDto model)
         {
             _userService.Create(new User

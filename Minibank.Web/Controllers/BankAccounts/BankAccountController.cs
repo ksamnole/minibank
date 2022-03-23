@@ -79,28 +79,13 @@ namespace Minibank.Web.Controllers.BankAccounts
             });
         }
 
-        [HttpPost()]
+        [HttpPost]
         public void Create(string userId, Currency currency)
         {
             _bankAccountService.Create(new BankAccount
             {
                 UserId = userId,
                 Currency = currency
-            });
-        }
-
-        [HttpPut("{id}")]
-        public void Update(string id, BankAccountDto model)
-        {
-            _bankAccountService.Update(new BankAccount()
-            {
-                Id = id,
-                IsActive = model.IsActive,
-                UserId = model.UserId,
-                Amount = model.Amount,
-                Currency = model.Currency,
-                OpenDate = model.OpenDate,
-                CloseDate = model.CloseDate
             });
         }
 

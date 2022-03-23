@@ -17,7 +17,7 @@ namespace Minibank.Web.Controllers.HistoryTransfers
             _historyTransferService = historyTransferService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public IEnumerable<HistoryTransferDto> GetAll()
         {
             return _historyTransferService.GetAll()
