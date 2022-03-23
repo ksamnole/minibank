@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Minibank.Core.Domains.BankAccounts.Enums;
 
 namespace Minibank.Core
 {
     public interface ICurrencyConverter
     {
-       float Convert(float amountInRubles, string currencyCode);
+       float Convert(float amount, Currency fromCurrency, Currency toCurrency);
     }
 }
