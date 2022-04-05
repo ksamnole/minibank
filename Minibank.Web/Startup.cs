@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Minibank.Core;
 using Minibank.Data;
+using Minibank.Data.HostedServices;
 using Minibank.Web.Middlewares;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace Minibank.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHostedService<MigrationHostedService>();
+
             services
                 .AddData(Configuration)
                 .AddCore();

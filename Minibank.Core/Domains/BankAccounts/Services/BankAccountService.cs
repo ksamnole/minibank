@@ -4,6 +4,7 @@ using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System;
 using System.Collections.Generic;
 using Minibank.Core.Domains.BankAccounts.Enums;
+using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.BankAccounts.Services
 {
@@ -12,42 +13,44 @@ namespace Minibank.Core.Domains.BankAccounts.Services
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly IHistoryTransferRepository _historyTransferRepository;
         private readonly ICurrencyConverter _currencyConverter;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null)
+        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null, IUnitOfWork unitOfWork = null)
         {
             _bankAccountRepository = bankAccountRepository;
             _historyTransferRepository = historyTransferRepository;
             _currencyConverter = currencyConverter;
+            _unitOfWork = unitOfWork;
         }
 
-        public BankAccount GetById(string id)
+        public async Task<BankAccount> GetById(string id)
         {
-            return _bankAccountRepository.GetById(id);
+            return await _bankAccountRepository.GetById(id);
         }
 
-        public IEnumerable<BankAccount> GetAll()
+        public async Task<IEnumerable<BankAccount>> GetAll()
         {
-            return _bankAccountRepository.GetAll();
+            return await _bankAccountRepository.GetAll();
         }
 
-        public float CalculateCommission(float amount, string fromAccountId, string toAccountId)
+        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId)
         {
             if (amount < 0)
                 throw new ValidationException("Сумма не может быть меньше 0", amount);
 
-            var fromAccount = _bankAccountRepository.GetById(fromAccountId);
-            var toAccount = _bankAccountRepository.GetById(toAccountId);
+            var fromAccount = await _bankAccountRepository.GetById(fromAccountId);
+            var toAccount = await _bankAccountRepository.GetById(toAccountId);
 
             return CalculateCommission(amount, fromAccount, toAccount);
         }
 
-        public void TransferMoney(float amount, string fromAccountId, string toAccountId)
+        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId)
         {
             if (amount <= 0)
                 throw new ValidationException("Сумма перевода должна быть больше нуля", amount);
 
-            var fromAccount = _bankAccountRepository.GetById(fromAccountId);
-            var toAccount = _bankAccountRepository.GetById(toAccountId);
+            var fromAccount = await _bankAccountRepository.GetById(fromAccountId);
+            var toAccount = await _bankAccountRepository.GetById(toAccountId);
 
             var commission = CalculateCommission(amount, fromAccount, toAccount);
 
@@ -63,41 +66,49 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
 
             fromAccount.Amount -= (amount + commission);
-            _bankAccountRepository.Update(fromAccount);
+            await _bankAccountRepository.Update(fromAccount);
 
             toAccount.Amount += amountInToAccountCurrency;
-            _bankAccountRepository.Update(toAccount);
+            await _bankAccountRepository.Update(toAccount);
 
-            _historyTransferRepository.Create(new HistoryTransfer() {
+            await _historyTransferRepository.Create(new HistoryTransfer() {
                 Id = Guid.NewGuid().ToString(),
                 Amount = amount,
                 Currency = fromAccount.Currency,
                 FromAccountId = fromAccountId,
                 ToAccountId = toAccountId
             });
+
+            await _unitOfWork.SaveChange();
         }
 
-        public void Create(BankAccount bankAccount)
+        public async Task Create(BankAccount bankAccount)
         {
             if (!Enum.IsDefined(typeof(Currency), bankAccount.Currency))
                 throw new ValidationException("Запрещенная валюта", bankAccount.Currency);
             
-            _bankAccountRepository.Create(bankAccount);
+            await _bankAccountRepository.Create(bankAccount);
+
+            await _unitOfWork.SaveChange();
         }
 
-        public void Update(BankAccount bankAccount)
+        public async Task Update(BankAccount bankAccount)
         {
-            _bankAccountRepository.Update(bankAccount);
+            await _bankAccountRepository.Update(bankAccount);
+
+            await _unitOfWork.SaveChange();
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-            _bankAccountRepository.Delete(id);
+            await _bankAccountRepository.Delete(id);
+
+            await _unitOfWork.SaveChange();
         }
 
-        public void CloseAccount(string id)
+        public async Task CloseAccount(string id)
         {
-            var model = _bankAccountRepository.GetById(id);
+            var model = await _bankAccountRepository.GetById(id);
 
             if (model.Amount != 0)
                 throw new ValidationException("Сумма на счету аккаунта должна быть 0");
@@ -105,7 +116,9 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             model.IsActive = false;
             model.CloseDate = DateTime.Now;
 
-            _bankAccountRepository.Update(model);
+            await _bankAccountRepository.Update(model);
+
+            await _unitOfWork.SaveChange();
         }
 
         private float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)

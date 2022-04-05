@@ -1,40 +1,46 @@
 ﻿using Minibank.Core.Domains.Users.Repositories;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.Users.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public User GetById(string id)
+        public async Task<User> GetById(string id)
         {
-            return _userRepository.GetById(id);
+            return await _userRepository.GetById(id);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return _userRepository.GetAll();
+            return await _userRepository.GetAll();
         }
 
-        public void Create(User user)
+        public async Task Create(User user)
         {
-            _userRepository.Create(user);
+            await _userRepository.Create(user);
+            await _unitOfWork.SaveChange();
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-            _userRepository.Delete(id);
+            await _userRepository.Delete(id);
+            await _unitOfWork.SaveChange();
         }
 
-        public void Update(User user)
+        public async Task Update(User user)
         {
-            _userRepository.Update(user);
+            await _userRepository.Update(user);
+            await _unitOfWork.SaveChange();
         }
     }
 }

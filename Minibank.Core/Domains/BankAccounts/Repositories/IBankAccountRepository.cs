@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.BankAccounts.Repositories
 {
     public interface IBankAccountRepository
     {
-        BankAccount GetById(string id);
-        IEnumerable<BankAccount> GetAll();
-        void Create(BankAccount bankAccount);
-        void Update(BankAccount bankAccount);
-        void Delete(string id);
+        Task<BankAccount> GetById(string id);
+        Task<IEnumerable<BankAccount>> GetAll();
+        Task Create(BankAccount bankAccount);
+        Task Update(BankAccount bankAccount);
+        Task Delete(string id);
     }
 }

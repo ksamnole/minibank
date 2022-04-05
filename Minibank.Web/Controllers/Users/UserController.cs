@@ -21,9 +21,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpGet("{id}")]
-        public UserDto Get(string id)
+        public async Task<UserDto> Get(string id)
         {
-            var model = _userService.GetById(id);
+            var model = await _userService.GetById(id);
 
             return new UserDto
             {
@@ -34,10 +34,11 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpGet]
-        public IEnumerable<UserDto> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAll()
         {
-            return _userService.GetAll()
-                .Select(it => new UserDto
+            var users = await _userService.GetAll();
+
+            return users.Select(it => new UserDto
                 {
                     Id = it.Id,
                     Login = it.Login,
@@ -46,9 +47,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpPost]
-        public void Create(UserDto model)
+        public async Task Create(UserDto model)
         {
-            _userService.Create(new User
+            await _userService.Create(new User
             {
                 Id = model.Id,
                 Login = model.Login,
@@ -57,9 +58,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpPut("{id}")]
-        public void Update(string id, UserDto model)
+        public async Task Update(string id, UserDto model)
         {
-            _userService.Update(new User
+            await _userService.Update(new User
             {
                 Id = id,
                 Login = model.Login,
@@ -68,9 +69,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
-            _userService.Delete(id);
+            await _userService.Delete(id);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Minibank.Core.Domains.HistoryTransfers.Repositories
 {
     public interface IHistoryTransferRepository
     {
-        public IEnumerable<HistoryTransfer> GetAll();
-        public void Create(HistoryTransfer historyTransfer);
+        public Task<IEnumerable<HistoryTransfer>> GetAll();
+        public Task Create(HistoryTransfer historyTransfer);
     }
 }
