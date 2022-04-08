@@ -20,14 +20,7 @@ namespace Minibank.Data.Users
     {
         public void Configure(EntityTypeBuilder<UserDbModel> builder)
         {
-            builder.Property(it => it.Id)
-                .HasColumnName("id");
 
-            builder.Property(it => it.Login)
-                .HasColumnName("login");
-
-            builder.Property(it => it.Email)
-                .HasColumnName("email");
         }
     }
 }

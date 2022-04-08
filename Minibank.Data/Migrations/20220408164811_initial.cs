@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Minibank.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,14 +12,14 @@ namespace Minibank.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
-                    Amount = table.Column<float>(type: "real", nullable: false),
+                    amount = table.Column<float>(type: "real", nullable: false),
                     currency = table.Column<int>(type: "integer", nullable: false),
                     from_account_id = table.Column<string>(type: "text", nullable: true),
                     to_account_id = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_history_transfer", x => x.id);
+                    table.PrimaryKey("pk_history_transfer", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,7 +32,7 @@ namespace Minibank.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user", x => x.id);
+                    table.PrimaryKey("pk_user", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,9 +49,9 @@ namespace Minibank.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_bank_account", x => x.id);
+                    table.PrimaryKey("pk_bank_account", x => x.id);
                     table.ForeignKey(
-                        name: "FK_bank_account_user_user_id",
+                        name: "fk_bank_account_user_user_id",
                         column: x => x.user_id,
                         principalTable: "user",
                         principalColumn: "id",
@@ -59,7 +59,7 @@ namespace Minibank.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_bank_account_user_id",
+                name: "ix_bank_account_user_id",
                 table: "bank_account",
                 column: "user_id");
         }

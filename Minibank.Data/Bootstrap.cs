@@ -25,7 +25,8 @@ namespace Minibank.Data
 
             services.AddDbContext<DataContext>(options => options
                 .UseLazyLoadingProxies()
-                .UseNpgsql("Host=localhost;Port=5432;Database=Minibank;Username=postgres;Password=1122334455"));
+                .UseSnakeCaseNamingConvention()
+                .UseNpgsql(configuration["ConnectionStringPostgresql"]));  
 
             services.AddHttpClient<IExchangeRates, ExchangeRates>(options => {
                 options.BaseAddress = new Uri(configuration["ExchangeRatesUri"]);

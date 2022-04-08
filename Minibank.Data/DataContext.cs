@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using Minibank.Data.BankAccounts.Repositories;
 using Minibank.Data.HistoryTransfers;
 using Minibank.Data.Users;
@@ -12,10 +13,7 @@ namespace Minibank.Data
         public DbSet<HistoryTransferDbModel> Transfers { get; set; }
         public DbSet<BankAccountDbModel> BankAccounts{ get; set; }
 
-        public DataContext(DbContextOptions options) : base(options)
-        {
-
-        }
+        public DataContext(DbContextOptions options): base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +25,7 @@ namespace Minibank.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseLazyLoadingProxies();
+            optionsBuilder.UseSnakeCaseNamingConvention();
             base.OnConfiguring(optionsBuilder);
         }
     }

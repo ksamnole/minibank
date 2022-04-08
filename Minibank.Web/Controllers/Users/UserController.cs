@@ -47,18 +47,17 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpPost]
-        public async Task Create(UserDto model)
+        public async Task Create(CreateUserDto model)
         {
             await _userService.Create(new User
             {
-                Id = model.Id,
                 Login = model.Login,
                 Email = model.Email
             });
         }
 
         [HttpPut("{id}")]
-        public async Task Update(string id, UserDto model)
+        public async Task Update(string id, CreateUserDto model)
         {
             await _userService.Update(new User
             {

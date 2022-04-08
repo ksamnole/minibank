@@ -24,30 +24,9 @@ namespace Minibank.Data.BankAccounts.Repositories
     {
         public void Configure(EntityTypeBuilder<BankAccountDbModel> builder)
         {
-            builder.Property(it => it.Id)
-                .HasColumnName("id");
-
-            builder.Property(it => it.IsActive)
-                .HasColumnName("is_active");
-
-            builder.Property(it => it.UserId)
-                .HasColumnName("user_id");
-
             builder.HasOne(it => it.User)
                 .WithMany(it => it.BankAccounts)
                 .HasForeignKey(it => it.UserId);
-
-            builder.Property(it => it.Amount)
-                .HasColumnName("amount");
-
-            builder.Property(it => it.Currency)
-                .HasColumnName("currency");
-
-            builder.Property(it => it.OpenDate)
-                .HasColumnName("open_date");
-
-            builder.Property(it => it.CloseDate)
-                .HasColumnName("close_date");
         }
     }
 }

@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Minibank.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220405173942_Initial")]
-    partial class Initial
+    [Migration("20220408164811_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,9 +51,11 @@ namespace Minibank.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_bank_account");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_bank_account_user_id");
 
                     b.ToTable("bank_account");
                 });
@@ -65,7 +67,8 @@ namespace Minibank.Data.Migrations
                         .HasColumnName("id");
 
                     b.Property<float>("Amount")
-                        .HasColumnType("real");
+                        .HasColumnType("real")
+                        .HasColumnName("amount");
 
                     b.Property<int>("Currency")
                         .HasColumnType("integer")
@@ -79,7 +82,8 @@ namespace Minibank.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("to_account_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_history_transfer");
 
                     b.ToTable("history_transfer");
                 });
@@ -98,7 +102,8 @@ namespace Minibank.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("login");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_user");
 
                     b.ToTable("user");
                 });
@@ -107,7 +112,8 @@ namespace Minibank.Data.Migrations
                 {
                     b.HasOne("Minibank.Data.Users.UserDbModel", "User")
                         .WithMany("BankAccounts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_bank_account_user_user_id");
 
                     b.Navigation("User");
                 });

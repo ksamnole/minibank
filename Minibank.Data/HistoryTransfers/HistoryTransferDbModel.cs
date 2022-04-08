@@ -19,17 +19,7 @@ namespace Minibank.Data.HistoryTransfers
     {
         public void Configure(EntityTypeBuilder<HistoryTransferDbModel> builder)
         {
-            builder.Property(it => it.Id)
-                .HasColumnName("id");
 
-            builder.Property(it => it.Currency)
-                .HasColumnName("currency");
-
-            builder.Property(it => it.FromAccountId)
-                .HasColumnName("from_account_id");
-
-            builder.Property(it => it.ToAccountId)
-                .HasColumnName("to_account_id");
         }
     }
 }
