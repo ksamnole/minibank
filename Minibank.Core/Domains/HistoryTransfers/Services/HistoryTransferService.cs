@@ -1,5 +1,6 @@
 ﻿using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.HistoryTransfers.Services
@@ -15,15 +16,15 @@ namespace Minibank.Core.Domains.HistoryTransfers.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Create(HistoryTransfer historyTransfer)
+        public async Task Create(HistoryTransfer historyTransfer, CancellationToken cancellationToken)
         {
-            await _historyTransferRepository.Create(historyTransfer);
+            await _historyTransferRepository.Create(historyTransfer, cancellationToken);
             await _unitOfWork.SaveChange();
         }
 
-        public async Task<IEnumerable<HistoryTransfer>> GetAll()
+        public async Task<IEnumerable<HistoryTransfer>> GetAll(CancellationToken cancellationToken)
         {
-            return await _historyTransferRepository.GetAll();
+            return await _historyTransferRepository.GetAll(cancellationToken);
         }
     }
 }

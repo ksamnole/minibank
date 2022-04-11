@@ -1,9 +1,11 @@
-﻿using Minibank.Core.Domains.HistoryTransfers;
+﻿using Microsoft.EntityFrameworkCore;
+using Minibank.Core.Domains.HistoryTransfers;
 using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Data.HistoryTransfers.Repositories
@@ -17,7 +19,7 @@ namespace Minibank.Data.HistoryTransfers.Repositories
             _context = context;
         }
 
-        public async Task Create(HistoryTransfer historyTransfer)
+        public async Task Create(HistoryTransfer historyTransfer, CancellationToken cancellationToken)
         {
             var entity = new HistoryTransferDbModel()
             {
@@ -28,12 +30,12 @@ namespace Minibank.Data.HistoryTransfers.Repositories
                 ToAccountId = historyTransfer.ToAccountId
             };
 
-            await _context.Transfers.AddAsync(entity);
+            await _context.Transfers.AddAsync(entity, cancellationToken);
         }
 
-        public async Task<IEnumerable<HistoryTransfer>> GetAll()
+        public async Task<IEnumerable<HistoryTransfer>> GetAll(CancellationToken cancellationToken)
         {
-            return _context.Transfers.Select(it =>
+            return await _context.Transfers.Select(it =>
             new HistoryTransfer
             {
                 Id = it.Id,
@@ -41,7 +43,7 @@ namespace Minibank.Data.HistoryTransfers.Repositories
                 Currency = it.Currency,
                 FromAccountId = it.FromAccountId,
                 ToAccountId = it.ToAccountId
-            });
+            }).ToListAsync(cancellationToken);
         }
     }
 }

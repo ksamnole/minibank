@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Data.Users.Repositories
@@ -18,9 +19,9 @@ namespace Minibank.Data.Users.Repositories
             _context = context;
         }
 
-        public async Task<User> GetById(string id)
+        public async Task<User> GetById(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id);
+            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
@@ -33,17 +34,17 @@ namespace Minibank.Data.Users.Repositories
             };
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
             return await _context.Users.Select(it => 
             new User { 
                 Id = it.Id,
                 Login = it.Login,
                 Email = it.Email
-            }).ToListAsync();
+            }).ToListAsync(cancellationToken);
         }
 
-        public async Task Create(User user)
+        public async Task Create(User user, CancellationToken cancellationToken)
         {
             var entity = new UserDbModel
             {
@@ -52,12 +53,12 @@ namespace Minibank.Data.Users.Repositories
                 Email = user.Email
             };
 
-            await _context.Users.AddAsync(entity);
+            await _context.Users.AddAsync(entity, cancellationToken);
         }
 
-        public async Task Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id);
+            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
@@ -65,9 +66,9 @@ namespace Minibank.Data.Users.Repositories
             _context.Users.Remove(entity);
         }
 
-        public async Task Update(User user)
+        public async Task Update(User user, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == user.Id);
+            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {user.Id} не найден");
