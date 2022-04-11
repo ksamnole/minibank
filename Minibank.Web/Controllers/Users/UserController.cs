@@ -5,6 +5,7 @@ using Minibank.Web.Controllers.Users.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.Users
@@ -21,9 +22,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpGet("{id}")]
-        public async Task<UserDto> Get(string id)
+        public async Task<UserDto> Get(string id, CancellationToken cancellationToken)
         {
-            var model = await _userService.GetById(id);
+            var model = await _userService.GetById(id, cancellationToken);
 
             return new UserDto
             {
@@ -34,9 +35,9 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpGet]
-        public async Task<IEnumerable<UserDto>> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAll(CancellationToken cancellationToken)
         {
-            var users = await _userService.GetAll();
+            var users = await _userService.GetAll(cancellationToken);
 
             return users.Select(it => new UserDto
                 {
@@ -47,30 +48,30 @@ namespace Minibank.Web.Controllers.Users
         }
 
         [HttpPost]
-        public async Task Create(CreateUserDto model)
+        public async Task Create(CreateUserDto model, CancellationToken cancellationToken)
         {
             await _userService.Create(new User
             {
                 Login = model.Login,
                 Email = model.Email
-            });
+            }, cancellationToken);
         }
 
         [HttpPut("{id}")]
-        public async Task Update(string id, CreateUserDto model)
+        public async Task Update(string id, CreateUserDto model, CancellationToken cancellationToken)
         {
             await _userService.Update(new User
             {
                 Id = id,
                 Login = model.Login,
                 Email = model.Email
-            });
+            }, cancellationToken);
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            await _userService.Delete(id);
+            await _userService.Delete(id, cancellationToken);
         }
     }
 }

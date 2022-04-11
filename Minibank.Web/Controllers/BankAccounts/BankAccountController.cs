@@ -5,6 +5,7 @@ using Minibank.Core.Domains.BankAccounts.Services;
 using Minibank.Web.Controllers.BankAccounts.Dto;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.BankAccounts
@@ -21,9 +22,9 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet("{id}")]
-        public async Task<BankAccountDto> Get(string id)
+        public async Task<BankAccountDto> Get(string id, CancellationToken cancellationToken)
         {
-            var model = await _bankAccountService.GetById(id);
+            var model = await _bankAccountService.GetById(id, cancellationToken);
 
             return new BankAccountDto()
             {
@@ -38,9 +39,9 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet]
-        public async Task<IEnumerable<BankAccountDto>> GetAll()
+        public async Task<IEnumerable<BankAccountDto>> GetAll(CancellationToken cancellationToken)
         {
-            var bankAccounts = await _bankAccountService.GetAll();
+            var bankAccounts = await _bankAccountService.GetAll(cancellationToken);
 
             return bankAccounts.Select(it => new BankAccountDto() {
                 Id = it.Id,
@@ -54,21 +55,21 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet("commission")]
-        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId)
+        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
-            return await _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId);
+            return await _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPost("transfer")]
-        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId)
+        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
-            await _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId);
+            await _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPut("deposit/{id}")]
-        public async Task Deposit(string id, float amout)
+        public async Task Deposit(string id, float amout, CancellationToken cancellationToken)
         {
-            var entity = await _bankAccountService.GetById(id);
+            var entity = await _bankAccountService.GetById(id, cancellationToken);
 
             await _bankAccountService.Update(new BankAccount()
             {
@@ -79,29 +80,29 @@ namespace Minibank.Web.Controllers.BankAccounts
                 Currency = entity.Currency,
                 OpenDate = entity.OpenDate,
                 CloseDate = entity.CloseDate
-            });
+            }, cancellationToken);
         }
 
         [HttpPost]
-        public async Task Create(string userId, Currency currency)
+        public async Task Create(string userId, Currency currency, CancellationToken cancellationToken)
         {
             await _bankAccountService.Create(new BankAccount
             {
                 UserId = userId,
                 Currency = currency
-            });
+            }, cancellationToken);
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            await _bankAccountService.Delete(id);
+            await _bankAccountService.Delete(id, cancellationToken);
         }
 
         [HttpGet("close/{id}")]
-        public async Task CloseAccount(string id)
+        public async Task CloseAccount(string id, CancellationToken cancellationToken)
         {
-            await _bankAccountService.CloseAccount(id);
+            await _bankAccountService.CloseAccount(id, cancellationToken);
         }
     }
 }

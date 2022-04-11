@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Data.BankAccounts.Repositories
@@ -18,9 +19,9 @@ namespace Minibank.Data.BankAccounts.Repositories
             _context = context;
         }
 
-        public async Task<BankAccount> GetById(string id)
+        public async Task<BankAccount> GetById(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == id);
+            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Банковский аккаунт с Id = {id} не найден");
@@ -37,9 +38,9 @@ namespace Minibank.Data.BankAccounts.Repositories
             };
         }
 
-        public async Task<IEnumerable<BankAccount>> GetAll()
+        public async Task<IEnumerable<BankAccount>> GetAll(CancellationToken cancellationToken)
         {
-            return _context.BankAccounts.Select(it =>
+            return await _context.BankAccounts.Select(it =>
             new BankAccount
             {
                 Id = it.Id,
@@ -49,10 +50,10 @@ namespace Minibank.Data.BankAccounts.Repositories
                 Currency = it.Currency,
                 OpenDate = it.OpenDate,
                 CloseDate = it.CloseDate
-            });
+            }).ToListAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task Create(BankAccount bankAccount)
+        public async Task Create(BankAccount bankAccount, CancellationToken cancellationToken)
         {
             var entity = new BankAccountDbModel
             {
@@ -64,12 +65,12 @@ namespace Minibank.Data.BankAccounts.Repositories
                 OpenDate = DateTime.Now
             };
 
-            await _context.BankAccounts.AddAsync(entity);
+            await _context.BankAccounts.AddAsync(entity, cancellationToken);
         }
 
-        public async Task Update(BankAccount bankAccount)
+        public async Task Update(BankAccount bankAccount, CancellationToken cancellationToken)
         {
-            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == bankAccount.Id);
+            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == bankAccount.Id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Банковский аккаунт с Id = {bankAccount.Id} не найден");
@@ -82,9 +83,9 @@ namespace Minibank.Data.BankAccounts.Repositories
             entity.CloseDate = bankAccount.CloseDate;
         }
 
-        public async Task Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == id);
+            var entity = await _context.BankAccounts.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Банковский аккаунт с Id = {id} не найден");

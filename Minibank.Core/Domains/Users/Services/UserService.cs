@@ -1,5 +1,6 @@
 ﻿using Minibank.Core.Domains.Users.Repositories;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.Users.Services
@@ -15,31 +16,31 @@ namespace Minibank.Core.Domains.Users.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<User> GetById(string id)
+        public async Task<User> GetById(string id, CancellationToken cancellationToken)
         {
-            return await _userRepository.GetById(id);
+            return await _userRepository.GetById(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
-            return await _userRepository.GetAll();
+            return await _userRepository.GetAll(cancellationToken);
         }
 
-        public async Task Create(User user)
+        public async Task Create(User user, CancellationToken cancellationToken)
         {
-            await _userRepository.Create(user);
+            await _userRepository.Create(user, cancellationToken);
             await _unitOfWork.SaveChange();
         }
 
-        public async Task Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            await _userRepository.Delete(id);
+            await _userRepository.Delete(id, cancellationToken);
             await _unitOfWork.SaveChange();
         }
 
-        public async Task Update(User user)
+        public async Task Update(User user, CancellationToken cancellationToken)
         {
-            await _userRepository.Update(user);
+            await _userRepository.Update(user, cancellationToken);
             await _unitOfWork.SaveChange();
         }
     }
