@@ -35,12 +35,12 @@ namespace Minibank.Data.Users.Repositories
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            return _context.Users.Select(it => 
+            return await _context.Users.Select(it => 
             new User { 
                 Id = it.Id,
                 Login = it.Login,
                 Email = it.Email
-            });
+            }).ToListAsync();
         }
 
         public async Task Create(User user)
@@ -75,5 +75,9 @@ namespace Minibank.Data.Users.Repositories
             entity.Login = user.Login;
             entity.Email = user.Email;    
         }
+
+        public bool ContainsByLogin(string login) => _context
+            .Users
+            .Any(user => user.Login == login);
     }
 }

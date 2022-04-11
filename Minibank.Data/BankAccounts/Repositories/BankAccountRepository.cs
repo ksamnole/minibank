@@ -39,7 +39,7 @@ namespace Minibank.Data.BankAccounts.Repositories
 
         public async Task<IEnumerable<BankAccount>> GetAll()
         {
-            return _context.BankAccounts.Select(it =>
+            return await _context.BankAccounts.Select(it =>
             new BankAccount
             {
                 Id = it.Id,
@@ -49,7 +49,7 @@ namespace Minibank.Data.BankAccounts.Repositories
                 Currency = it.Currency,
                 OpenDate = it.OpenDate,
                 CloseDate = it.CloseDate
-            });
+            }).ToListAsync();
         }
 
         public async Task Create(BankAccount bankAccount)

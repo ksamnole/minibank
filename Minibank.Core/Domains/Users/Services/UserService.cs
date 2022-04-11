@@ -1,6 +1,7 @@
 ﻿using Minibank.Core.Domains.Users.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace Minibank.Core.Domains.Users.Services
 {
@@ -27,6 +28,9 @@ namespace Minibank.Core.Domains.Users.Services
 
         public async Task Create(User user)
         {
+            if (user.Login == null)
+                throw new Exception("Не задан логин пользователя");
+
             await _userRepository.Create(user);
             await _unitOfWork.SaveChange();
         }
