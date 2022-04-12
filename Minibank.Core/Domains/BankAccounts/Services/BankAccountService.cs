@@ -88,7 +88,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task Create(BankAccount bankAccount, CancellationToken cancellationToken)
         {
-            _bankAccountValidator.Validate(bankAccount);
+            await _bankAccountValidator.ValidateAndThrowAsync(bankAccount, cancellationToken);
             
             await _bankAccountRepository.Create(bankAccount, cancellationToken);
 
@@ -97,6 +97,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task Update(BankAccount bankAccount, CancellationToken cancellationToken)
         {
+            await _bankAccountValidator.ValidateAndThrowAsync(bankAccount, cancellationToken);
+            
             await _bankAccountRepository.Update(bankAccount, cancellationToken);
 
             await _unitOfWork.SaveChange();

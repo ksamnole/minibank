@@ -32,7 +32,7 @@ namespace Minibank.Core.Domains.Users.Services
 
         public async Task Create(User user, CancellationToken cancellationToken)
         {
-            _userValidator.ValidateAndThrow(user);
+            await _userValidator.ValidateAndThrowAsync(user, cancellationToken);
 
             await _userRepository.Create(user, cancellationToken);
             await _unitOfWork.SaveChange();
@@ -46,7 +46,7 @@ namespace Minibank.Core.Domains.Users.Services
 
         public async Task Update(User user, CancellationToken cancellationToken)
         {
-            _userValidator.Validate(user);
+            await _userValidator.ValidateAndThrowAsync(user, cancellationToken);
 
             await _userRepository.Update(user, cancellationToken);
             await _unitOfWork.SaveChange();
