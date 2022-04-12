@@ -18,7 +18,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
         private readonly IValidator<BankAccount> _bankAccountValidator;
         private readonly IUnitOfWork _unitOfWork;
 
-        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null, IUnitOfWork unitOfWork = null, IValidator<BankAccount> bankAccountValidator = null)
+        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter, IHistoryTransferRepository historyTransferRepository, IUnitOfWork unitOfWork, IValidator<BankAccount> bankAccountValidator)
         {
             _bankAccountRepository = bankAccountRepository;
             _historyTransferRepository = historyTransferRepository;
@@ -61,13 +61,9 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             if (fromAccount.Amount < amount + commission)
                 throw new ValidationException("На счете недостаточно средств");
 
-            float amountInToAccountCurrency;
-
-            if (fromAccount.Currency != toAccount.Currency)
-                amountInToAccountCurrency = _currencyConverter.Convert(amount, fromAccount.Currency, toAccount.Currency);
-            else
-                amountInToAccountCurrency = amount;
-
+            var amountInToAccountCurrency = fromAccount.Currency != toAccount.Currency
+                ? _currencyConverter.Convert(amount, fromAccount.Currency, toAccount.Currency)
+                : amount;
 
             fromAccount.Amount -= (amount + commission);
             await _bankAccountRepository.Update(fromAccount, cancellationToken);
@@ -88,7 +84,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task Create(BankAccount bankAccount, CancellationToken cancellationToken)
         {
-            _bankAccountValidator.Validate(bankAccount);
+            await _bankAccountValidator.ValidateAndThrowAsync(bankAccount, cancellationToken);
             
             await _bankAccountRepository.Create(bankAccount, cancellationToken);
 
@@ -97,6 +93,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task Update(BankAccount bankAccount, CancellationToken cancellationToken)
         {
+            await _bankAccountValidator.ValidateAndThrowAsync(bankAccount, cancellationToken);
+            
             await _bankAccountRepository.Update(bankAccount, cancellationToken);
 
             await _unitOfWork.SaveChange();
