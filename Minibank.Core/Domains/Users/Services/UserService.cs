@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using FluentValidation;
 
 namespace Minibank.Core.Domains.Users.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IValidator<User> _userValidator;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
+        public UserService(IUserRepository userRepository, IValidator<User> userValidator, IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
+            _userValidator = userValidator;
             _unitOfWork = unitOfWork;
         }
 
@@ -29,10 +32,9 @@ namespace Minibank.Core.Domains.Users.Services
 
         public async Task Create(User user, CancellationToken cancellationToken)
         {
-            await _userRepository.Create(user, cancellationToken);
-            if (user.Login == null)
-                throw new Exception("Не задан логин пользователя");
+            _userValidator.ValidateAndThrow(user);
 
+            await _userRepository.Create(user, cancellationToken);
             await _unitOfWork.SaveChange();
         }
 
@@ -44,6 +46,8 @@ namespace Minibank.Core.Domains.Users.Services
 
         public async Task Update(User user, CancellationToken cancellationToken)
         {
+            _userValidator.Validate(user);
+
             await _userRepository.Update(user, cancellationToken);
             await _unitOfWork.SaveChange();
         }

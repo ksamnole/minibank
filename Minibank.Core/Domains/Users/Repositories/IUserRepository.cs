@@ -11,5 +11,7 @@ namespace Minibank.Core.Domains.Users.Repositories
         Task Create(User user, CancellationToken cancellationToken);
         Task Update(User user, CancellationToken cancellationToken);
         Task Delete(string id, CancellationToken cancellationToken);
+
+        bool ContainsByLogin(string login);
     }
 }

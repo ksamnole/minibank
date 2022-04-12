@@ -1,12 +1,11 @@
 using Minibank.Core.Domains.Users;
-using Minibank.Data.Users.Repositories;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using Minibank.Core.Domains.Users.Services;
 using Minibank.Core.Domains.Users.Repositories;
-using Minibank.Data.Users;
+using System.Threading;
 
 namespace Minibank.Core.Tests
 {
@@ -26,58 +25,33 @@ namespace Minibank.Core.Tests
         [Fact]
         public async Task GetUserById_SuccessPath_ReturnUserModel()
         {
-            // ARRANGE
+            var fakeUserId = "fakeId";
+
             _fakeUserRepository
-                .Setup(repository => repository.GetById(It.IsAny<string>()))
-                .Returns(new User());
+                .Setup(repository => repository.GetById(It.IsAny<string>(), CancellationToken.None))
+                .ReturnsAsync(new User() { Id = fakeUserId });
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<Exception>(() => _userService.Create(user));
+            var user = await _userService.GetById(fakeUserId, CancellationToken.None);
 
-            // ASSERT
-            Assert.Contains("Не задан логин пользователя", exception.Message);
+            Assert.Equal(user.Id, fakeUserId);
+        }
+
+        [Fact]
+        public async Task GetUserById_WithNullId_ShouldThrowException()
+        {
+            var exception = await Assert.ThrowsAsync<Exception>(() => _userService.GetById(null, CancellationToken.None));
+
+            Assert.Contains("Не задан id пользователя", exception.Message);
         }
 
         [Fact]
         public async Task AddUser_WithNullLogin_ShouldThrowException()
         {
-            // ARRANGE
             var user = new User { Login = null };
 
-            // ACT
-            var exception = await Assert.ThrowsAsync<Exception>(() =>_userService.Create(user));
+            var exception = await Assert.ThrowsAsync<Exception>(() =>_userService.Create(user, CancellationToken.None));
 
-            // ASSERT
             Assert.Contains("Не задан логин пользователя", exception.Message);
         }
-
-        //[Fact]
-        //public async Task AddUser_DuplicatedLogin_ShouldThrowException()
-        //{
-        //    // ARRANGE
-        //    _fakeUserRepository
-        //        .Setup(repository => repository.C(It.IsAny<string>()))
-        //        .Returns(true);
-        //    var user = new User { Login = "Login" };
-
-        //    // ACT
-        //    var exception = await Assert.ThrowsAsync<Exception>(() => _userService.Create(user));
-
-        //    // ASSERT
-        //    Assert.Contains("Не задан логин пользователя", exception.Message);
-        //}
-
-        //[Fact]
-        //public async Task GetUserById_SuccessPath_ReturnUserModel()
-        //{
-        //    // ARRANGE
-        //    var user = new User { Login = null };
-
-        //    // ACT
-        //    var exception = await Assert.ThrowsAsync<Exception>(() => _userService.Create(user));
-
-        //    // ASSERT
-        //    Assert.Contains("Не задан логин пользователя", exception.Message);
-        //}
     }
 }

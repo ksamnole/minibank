@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Minibank.Core.Domains.BankAccounts.Enums;
 using System.Threading.Tasks;
 using System.Threading;
+using FluentValidation;
 
 namespace Minibank.Core.Domains.BankAccounts.Services
 {
@@ -14,13 +15,15 @@ namespace Minibank.Core.Domains.BankAccounts.Services
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly IHistoryTransferRepository _historyTransferRepository;
         private readonly ICurrencyConverter _currencyConverter;
+        private readonly IValidator<BankAccount> _bankAccountValidator;
         private readonly IUnitOfWork _unitOfWork;
 
-        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null, IUnitOfWork unitOfWork = null)
+        public BankAccountService(IBankAccountRepository bankAccountRepository, ICurrencyConverter currencyConverter = null, IHistoryTransferRepository historyTransferRepository = null, IUnitOfWork unitOfWork = null, IValidator<BankAccount> bankAccountValidator = null)
         {
             _bankAccountRepository = bankAccountRepository;
             _historyTransferRepository = historyTransferRepository;
             _currencyConverter = currencyConverter;
+            _bankAccountValidator = bankAccountValidator;
             _unitOfWork = unitOfWork;
         }
 
@@ -85,8 +88,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task Create(BankAccount bankAccount, CancellationToken cancellationToken)
         {
-            if (!Enum.IsDefined(typeof(Currency), bankAccount.Currency))
-                throw new ValidationException("Запрещенная валюта", bankAccount.Currency);
+            _bankAccountValidator.Validate(bankAccount);
             
             await _bankAccountRepository.Create(bankAccount, cancellationToken);
 
