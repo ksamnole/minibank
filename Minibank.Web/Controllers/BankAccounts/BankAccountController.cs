@@ -5,6 +5,8 @@ using Minibank.Core.Domains.BankAccounts.Services;
 using Minibank.Web.Controllers.BankAccounts.Dto;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.BankAccounts
 {
@@ -20,9 +22,9 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet("{id}")]
-        public BankAccountDto Get(string id)
+        public async Task<BankAccountDto> Get(string id, CancellationToken cancellationToken)
         {
-            var model = _bankAccountService.GetById(id);
+            var model = await _bankAccountService.GetById(id, cancellationToken);
 
             return new BankAccountDto()
             {
@@ -37,9 +39,11 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet]
-        public IEnumerable<BankAccountDto> GetAll()
+        public async Task<IEnumerable<BankAccountDto>> GetAll(CancellationToken cancellationToken)
         {
-            return _bankAccountService.GetAll().Select(it => new BankAccountDto() {
+            var bankAccounts = await _bankAccountService.GetAll(cancellationToken);
+
+            return bankAccounts.Select(it => new BankAccountDto() {
                 Id = it.Id,
                 IsActive = it.IsActive,
                 UserId = it.UserId,
@@ -51,23 +55,23 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet("commission")]
-        public float CalculateCommission(float amount, string fromAccountId, string toAccountId)
+        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
-            return _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId);
+            return await _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPost("transfer")]
-        public void TransferMoney(float amount, string fromAccountId, string toAccountId)
+        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
-            _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId);
+            await _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPut("deposit/{id}")]
-        public void Deposit(string id, float amout)
+        public async Task Deposit(string id, float amout, CancellationToken cancellationToken)
         {
-            var entity = _bankAccountService.GetById(id);
+            var entity = await _bankAccountService.GetById(id, cancellationToken);
 
-            _bankAccountService.Update(new BankAccount()
+            await _bankAccountService.Update(new BankAccount()
             {
                 Id = id,
                 IsActive = entity.IsActive,
@@ -76,29 +80,29 @@ namespace Minibank.Web.Controllers.BankAccounts
                 Currency = entity.Currency,
                 OpenDate = entity.OpenDate,
                 CloseDate = entity.CloseDate
-            });
+            }, cancellationToken);
         }
 
         [HttpPost]
-        public void Create(string userId, Currency currency)
+        public async Task Create(string userId, Currency currency, CancellationToken cancellationToken)
         {
-            _bankAccountService.Create(new BankAccount
+            await _bankAccountService.Create(new BankAccount
             {
                 UserId = userId,
                 Currency = currency
-            });
+            }, cancellationToken);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            _bankAccountService.Delete(id);
+            await _bankAccountService.Delete(id, cancellationToken);
         }
 
         [HttpGet("close/{id}")]
-        public void CloseAccount(string id)
+        public async Task CloseAccount(string id, CancellationToken cancellationToken)
         {
-            _bankAccountService.CloseAccount(id);
+            await _bankAccountService.CloseAccount(id, cancellationToken);
         }
     }
 }

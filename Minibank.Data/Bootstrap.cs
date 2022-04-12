@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minibank.Core;
 using Minibank.Core.Domains.BankAccounts.Repositories;
@@ -19,6 +20,13 @@ namespace Minibank.Data
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
             services.AddScoped<IHistoryTransferRepository, HistoryTransferRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddDbContext<DataContext>(options => options
+                .UseLazyLoadingProxies()
+                .UseSnakeCaseNamingConvention()
+                .UseNpgsql(configuration["ConnectionStringPostgresql"]));  
 
             services.AddHttpClient<IExchangeRates, ExchangeRates>(options => {
                 options.BaseAddress = new Uri(configuration["ExchangeRatesUri"]);

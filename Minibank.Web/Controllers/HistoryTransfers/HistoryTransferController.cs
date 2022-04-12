@@ -3,6 +3,8 @@ using Minibank.Core.Domains.HistoryTransfers.Services;
 using Minibank.Web.Controllers.HistoryTransfers.Dto;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Minibank.Web.Controllers.HistoryTransfers
 {
@@ -18,10 +20,10 @@ namespace Minibank.Web.Controllers.HistoryTransfers
         }
 
         [HttpGet]
-        public IEnumerable<HistoryTransferDto> GetAll()
+        public async Task<IEnumerable<HistoryTransferDto>> GetAll(CancellationToken cancellationToken)
         {
-            return _historyTransferService.GetAll()
-                .Select(it => new HistoryTransferDto
+            var transfers = await _historyTransferService.GetAll(cancellationToken);
+            return transfers.Select(it => new HistoryTransferDto
                 {
                     Id = it.Id,
                     Amount = it.Amount,

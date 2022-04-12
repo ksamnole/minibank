@@ -1,25 +1,30 @@
 ﻿using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Minibank.Core.Domains.HistoryTransfers.Services
 {
     public class HistoryTransferService : IHistoryTransferService
     {
         private readonly IHistoryTransferRepository _historyTransferRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public HistoryTransferService(IHistoryTransferRepository historyTransferRepository)
+        public HistoryTransferService(IHistoryTransferRepository historyTransferRepository, IUnitOfWork unitOfWork)
         {
             _historyTransferRepository = historyTransferRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public void Create(HistoryTransfer historyTransfer)
+        public async Task Create(HistoryTransfer historyTransfer, CancellationToken cancellationToken)
         {
-            _historyTransferRepository.Create(historyTransfer);
+            await _historyTransferRepository.Create(historyTransfer, cancellationToken);
+            await _unitOfWork.SaveChange();
         }
 
-        public IEnumerable<HistoryTransfer> GetAll()
+        public async Task<IEnumerable<HistoryTransfer>> GetAll(CancellationToken cancellationToken)
         {
-            return _historyTransferRepository.GetAll();
+            return await _historyTransferRepository.GetAll(cancellationToken);
         }
     }
 }
