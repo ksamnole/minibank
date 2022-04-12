@@ -6,6 +6,7 @@ using Moq;
 using Minibank.Core.Domains.Users.Services;
 using Minibank.Core.Domains.Users.Repositories;
 using System.Threading;
+using FluentValidation;
 
 namespace Minibank.Core.Tests
 {
@@ -13,13 +14,15 @@ namespace Minibank.Core.Tests
     {
         private readonly IUserService _userService;
         private readonly Mock<IUserRepository> _fakeUserRepository;
+        private readonly Mock<AbstractValidator<User>> _fakeUserValidator;
         private readonly Mock<IUnitOfWork> _fakeUnitOfWork;
 
         public UserServiceTests()
         {
             _fakeUserRepository = new Mock<IUserRepository>();
+            _fakeUserValidator = new Mock<AbstractValidator<User>>();
             _fakeUnitOfWork = new Mock<IUnitOfWork>();
-            _userService = new UserService(_fakeUserRepository.Object, _fakeUnitOfWork.Object);
+            _userService = new UserService(_fakeUserRepository.Object, _fakeUserValidator.Object ,_fakeUnitOfWork.Object);
         }
 
         [Fact]
@@ -41,7 +44,7 @@ namespace Minibank.Core.Tests
         {
             var exception = await Assert.ThrowsAsync<Exception>(() => _userService.GetById(null, CancellationToken.None));
 
-            Assert.Contains("Не задан id пользователя", exception.Message);
+            Assert.Contains("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", exception.Message);
         }
 
         [Fact]
@@ -51,7 +54,7 @@ namespace Minibank.Core.Tests
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>_userService.Create(user, CancellationToken.None));
 
-            Assert.Contains("Не задан логин пользователя", exception.Message);
+            Assert.Contains("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", exception.Message);
         }
     }
 }
