@@ -9,6 +9,7 @@ using Minibank.Core.Domains.Users.Services;
 using Minibank.Core.Domains.Users.Repositories;
 using System.Threading;
 using FluentValidation;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Minibank.Core.Domains.Users.Validators;
 
 namespace Minibank.Core.Tests
@@ -31,27 +32,37 @@ namespace Minibank.Core.Tests
         [Fact]
         public async Task GetUserById_SuccessPath_ReturnUserModel()
         {
-            var fakeUserId = "fakeId";
-
             _fakeUserRepository
                 .Setup(repository => repository.GetById(It.IsAny<string>(), CancellationToken.None))
-                .ReturnsAsync(new User() { Id = fakeUserId });
+                .ReturnsAsync(new User() { Id = "fakeId" });
 
-            var user = await _userService.GetById(fakeUserId, CancellationToken.None);
+            var user = await _userService.GetById("fakeId", CancellationToken.None);
 
-            Assert.Equal(user.Id, fakeUserId);
+            Assert.Equal(typeof(User), user.GetType());
         }
-        
+
         [Fact]
         public async Task GetAllUsers_SuccessPath_ReturnListUsers()
         {
-            await _userService.GetAll(CancellationToken.None);
+            var fakeUsers = new List<User>()
+            {
+                new User() { Id = "1" },
+                new User() { Id = "2" },
+            };
             
+            _fakeUserRepository
+                .Setup(repository => repository.GetAll(CancellationToken.None))
+                .ReturnsAsync(fakeUsers);
+            
+            var users = await _userService.GetAll(CancellationToken.None);
+
             _fakeUserRepository.Verify(repository => repository.GetAll(CancellationToken.None));
+            
+            Assert.Equal(fakeUsers, users);
         }
 
         [Fact]
-        public async Task AddUser_SuccessPath()
+        public async Task AddUser_SuccessPath_CreateCalledOneTime()
         {
             var user = new User { Login = "test", Email = "test@test.ru"};
 
@@ -85,25 +96,33 @@ namespace Minibank.Core.Tests
         }
         
         [Fact]
-        public async Task DeleteUser_SuccessPath()
+        public async Task DeleteUser_SuccessPath_DeleteCalledOneTime()
         {
-            var fakeId = "fakeId";
-
-            await _userService.Delete(fakeId, CancellationToken.None);
+            await _userService.Delete("fakeId", CancellationToken.None);
             
-            _fakeUserRepository.Verify(repository => repository.Delete(fakeId, CancellationToken.None));
+            _fakeUserRepository.Verify(repository => repository.Delete("fakeId", CancellationToken.None));
         }
         
         [Fact]
-        public async Task UpdateUser_SuccessPath()
+        public async Task UpdateUser_SuccessPath_UpdateCalledOneTime()
         {
-            var user = new User { Id = "id6654654654", Login = "old", Email = "test@test" };
+            var user = new User { Id = "Id", Login = "Login", Email = "test@test" };
 
-            // await _userService.Create(user, CancellationToken.None);
-            //
-            user.Login = "new";
-            
             await _userService.Update(user, CancellationToken.None);
+            
+            _fakeUserRepository.Verify(repository => repository.Update(user, CancellationToken.None));
+        }
+        
+        [Fact]
+        public async Task UpdateUser_WithNullLogin_ShouldThrowException()
+        {
+            var user = new User { Id = "Id", Login = null, Email = "test@test" };
+            
+            var exception =  await Assert.ThrowsAsync<FluentValidation.ValidationException>(() => _userService.Update(user, CancellationToken.None));
+            var error = exception.Errors.First();
+
+            Assert.Equal("Login", error.PropertyName);
+            Assert.Equal("Не должен быть пустым", error.ErrorMessage);
         }
     }
 }

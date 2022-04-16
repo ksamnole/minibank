@@ -7,16 +7,16 @@ namespace Minibank.Data
 {
     public class ExchangeRates : IExchangeRates
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
 
         public ExchangeRates(HttpClient httpClient)
         {
-            this.httpClient = httpClient;
+            this._httpClient = httpClient;
         }
 
         public float GetExchange(string code)
         {
-            var response = httpClient.GetFromJsonAsync<ExchangeResponse>("daily_json.js")
+            var response = _httpClient.GetFromJsonAsync<ExchangeResponse>("daily_json.js")
                 .GetAwaiter().GetResult();
 
             return response.Valute.TryGetValue(code, out var valute)

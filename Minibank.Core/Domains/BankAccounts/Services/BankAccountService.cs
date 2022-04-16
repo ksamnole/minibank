@@ -39,8 +39,8 @@ namespace Minibank.Core.Domains.BankAccounts.Services
 
         public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
-            if (amount < 0)
-                throw new ValidationException("Сумма не может быть меньше 0", amount);
+            if (amount <= 0)
+                throw new ValidationException("Сумма не может быть меньше или равна 0", amount);
 
             var fromAccount = await _bankAccountRepository.GetById(fromAccountId, cancellationToken);
             var toAccount = await _bankAccountRepository.GetById(toAccountId, cancellationToken);
@@ -122,7 +122,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             await _unitOfWork.SaveChange();
         }
 
-        private float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)
+        private static float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)
         {
             // Transfer between same users
             if (fromAccount.UserId == toAccount.UserId)
