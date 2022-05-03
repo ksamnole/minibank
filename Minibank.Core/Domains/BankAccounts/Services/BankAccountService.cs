@@ -3,6 +3,7 @@ using Minibank.Core.Domains.HistoryTransfers;
 using Minibank.Core.Domains.HistoryTransfers.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Minibank.Core.Domains.BankAccounts.Enums;
 using System.Threading.Tasks;
 using System.Threading;
@@ -37,7 +38,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             return await _bankAccountRepository.GetAll(cancellationToken);
         }
 
-        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
+        public async Task<double> CalculateCommission(double amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
             if (amount <= 0)
                 throw new ValidationException("Сумма не может быть меньше или равна 0", amount);
@@ -48,7 +49,7 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             return CalculateCommission(amount, fromAccount, toAccount);
         }
 
-        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
+        public async Task TransferMoney(double amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
             if (amount <= 0)
                 throw new ValidationException("Сумма перевода должна быть больше нуля", amount);
@@ -122,15 +123,13 @@ namespace Minibank.Core.Domains.BankAccounts.Services
             await _unitOfWork.SaveChange();
         }
 
-        private static float CalculateCommission(float amount, BankAccount fromAccount, BankAccount toAccount)
+        private static double CalculateCommission(double amount, BankAccount fromAccount, BankAccount toAccount)
         {
             // Transfer between same users
             if (fromAccount.UserId == toAccount.UserId)
                 return 0;
 
-            var commission = Math.Round(amount * 0.02, 2);
-
-            return (float)commission;
+            return Math.Round(amount * 0.02, 2);
         }
     }
 }

@@ -1,42 +1,42 @@
-using Minibank.Core.Domains.Users;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Moq;
-using Minibank.Core.Domains.Users.Services;
-using Minibank.Core.Domains.Users.Repositories;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Minibank.Core.Domains.Users;
+using Minibank.Core.Domains.Users.Repositories;
+using Minibank.Core.Domains.Users.Services;
 using Minibank.Core.Domains.Users.Validators;
+using Moq;
+using Xunit;
 
-namespace Minibank.Core.Tests
+namespace Minibank.Core.Tests.Tests
 {
     public class UserServiceTests
     {
-        private readonly Mock<IUserRepository> _fakeUserRepository;
-        private readonly Mock<IUnitOfWork> _fakeUnitOfWork;
+        private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly IValidator<User> _userValidator;
         private readonly IUserService _userService;
 
         public UserServiceTests()
         {
-            _fakeUserRepository = new Mock<IUserRepository>();
-            _fakeUnitOfWork = new Mock<IUnitOfWork>();
-            _userValidator = new UserValidator(_fakeUserRepository.Object);
-            _userService = new UserService(_fakeUserRepository.Object, _userValidator ,_fakeUnitOfWork.Object);
+            _mockUserRepository = new Mock<IUserRepository>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
+            _userValidator = new UserValidator(_mockUserRepository.Object);
+            _userService = new UserService(_mockUserRepository.Object, _userValidator ,_mockUnitOfWork.Object);
         }
 
         [Fact]
         public async Task GetUserById_SuccessPath_ReturnUserModel()
         {
-            _fakeUserRepository
-                .Setup(repository => repository.GetById(It.IsAny<string>(), CancellationToken.None))
-                .ReturnsAsync(new User() { Id = "fakeId" });
+            var fakeId = "id";
+            
+            _mockUserRepository
+                .Setup(repository => repository.GetById(fakeId, CancellationToken.None))
+                .ReturnsAsync(new User() { Id = fakeId });
 
-            var user = await _userService.GetById("fakeId", CancellationToken.None);
+            var user = await _userService.GetById(fakeId, CancellationToken.None);
 
             Assert.Equal(typeof(User), user.GetType());
         }
@@ -50,13 +50,13 @@ namespace Minibank.Core.Tests
                 new User() { Id = "2" },
             };
             
-            _fakeUserRepository
+            _mockUserRepository
                 .Setup(repository => repository.GetAll(CancellationToken.None))
                 .ReturnsAsync(fakeUsers);
             
             var users = await _userService.GetAll(CancellationToken.None);
 
-            _fakeUserRepository.Verify(repository => repository.GetAll(CancellationToken.None));
+            _mockUserRepository.Verify(repository => repository.GetAll(CancellationToken.None));
             
             Assert.Equal(fakeUsers, users);
         }
@@ -67,8 +67,9 @@ namespace Minibank.Core.Tests
             var user = new User { Login = "test", Email = "test@test.ru"};
 
             await _userService.Create(user, CancellationToken.None);
-            
-            _fakeUserRepository.Verify(repository => repository.Create(user, CancellationToken.None));
+
+            _mockUnitOfWork.Verify(verify => verify.SaveChange());
+            _mockUserRepository.Verify(repository => repository.Create(user, CancellationToken.None));
         }
         
         [Fact]
@@ -100,7 +101,7 @@ namespace Minibank.Core.Tests
         {
             await _userService.Delete("fakeId", CancellationToken.None);
             
-            _fakeUserRepository.Verify(repository => repository.Delete("fakeId", CancellationToken.None));
+            _mockUserRepository.Verify(repository => repository.Delete("fakeId", CancellationToken.None));
         }
         
         [Fact]
@@ -110,7 +111,7 @@ namespace Minibank.Core.Tests
 
             await _userService.Update(user, CancellationToken.None);
             
-            _fakeUserRepository.Verify(repository => repository.Update(user, CancellationToken.None));
+            _mockUserRepository.Verify(repository => repository.Update(user, CancellationToken.None));
         }
         
         [Fact]

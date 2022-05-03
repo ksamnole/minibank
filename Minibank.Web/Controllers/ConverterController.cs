@@ -21,7 +21,7 @@ namespace Minibank.Web.Controllers
         }
 
         [HttpGet("convert")]
-        public float Convert(int amount, Currency fromCurrency, Currency toCurrency)
+        public double Convert(int amount, Currency fromCurrency, Currency toCurrency)
         {
             return _converter.Convert(amount, fromCurrency, toCurrency);
         }
