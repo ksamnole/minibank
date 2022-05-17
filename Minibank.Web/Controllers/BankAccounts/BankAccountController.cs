@@ -55,19 +55,19 @@ namespace Minibank.Web.Controllers.BankAccounts
         }
 
         [HttpGet("commission")]
-        public async Task<float> CalculateCommission(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
+        public async Task<double> CalculateCommission(double amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
             return await _bankAccountService.CalculateCommission(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPost("transfer")]
-        public async Task TransferMoney(float amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
+        public async Task TransferMoney(double amount, string fromAccountId, string toAccountId, CancellationToken cancellationToken)
         {
             await _bankAccountService.TransferMoney(amount, fromAccountId, toAccountId, cancellationToken);
         }
 
         [HttpPut("deposit/{id}")]
-        public async Task Deposit(string id, float amout, CancellationToken cancellationToken)
+        public async Task Deposit(string id, double amount, CancellationToken cancellationToken)
         {
             var entity = await _bankAccountService.GetById(id, cancellationToken);
 
@@ -76,7 +76,7 @@ namespace Minibank.Web.Controllers.BankAccounts
                 Id = id,
                 IsActive = entity.IsActive,
                 UserId = entity.UserId,
-                Amount = entity.Amount + amout,
+                Amount = entity.Amount + amount,
                 Currency = entity.Currency,
                 OpenDate = entity.OpenDate,
                 CloseDate = entity.CloseDate

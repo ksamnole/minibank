@@ -11,7 +11,7 @@ namespace Minibank.Core
             this._exchangeRates = exchangeRates;
         }
 
-        public float Convert(float amount, Currency fromCurrency, Currency toCurrency)
+        public double Convert(double amount, Currency fromCurrency, Currency toCurrency)
         {
             if (amount < 0)
                 throw new ValidationException("Сумма должна быть больше 0", amount);

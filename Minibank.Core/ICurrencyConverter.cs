@@ -4,6 +4,6 @@ namespace Minibank.Core
 {
     public interface ICurrencyConverter
     {
-       float Convert(float amount, Currency fromCurrency, Currency toCurrency);
+        double Convert(double amount, Currency fromCurrency, Currency toCurrency);
     }
 }

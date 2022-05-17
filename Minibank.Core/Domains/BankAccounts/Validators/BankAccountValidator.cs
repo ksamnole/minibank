@@ -13,10 +13,9 @@ namespace Minibank.Core.Domains.BankAccounts.Validators
     {
         public BankAccountValidator(IBankAccountRepository bankAccountRepository)
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("Не должен быть пустым");
-            RuleFor(x => x.Currency)
-                .Must(currency => !Enum.IsDefined(typeof(Currency), currency))
-                .WithName("Валюта")
+            RuleFor(x => x.UserId).NotEmpty()
+                .WithMessage("Не должен быть пустым");
+            RuleFor(x => x.Currency).Must(currency => Enum.IsDefined(typeof(Currency), currency))
                 .WithMessage("Запрещенна для использования");
         }
     }
